@@ -12,6 +12,7 @@ building an analytics solution in Microsoft Fabric.
 
 - [One-command setup](docs/bootstrap-guide.md)
 - [Fork, configure, and deploy](docs/deployment-guide.md)
+- [How the repository works](docs/how-it-works.md)
 - [Architecture, governance, operations, and troubleshooting](docs/architecture-operations.md)
 - [Fabric orchestration reference](docs/fabric-orchestration.md)
 - [Silver data dictionary](docs/silver-data-dictionary.md)
@@ -23,6 +24,14 @@ building an analytics solution in Microsoft Fabric.
 
 The implemented solution separates responsibilities so each layer can evolve
 without embedding credentials or environment-specific identifiers in source:
+
+![Repository architecture](docs/diagrams/github-copilot-metrics-architecture.svg)
+
+The diagram is also available as
+[PNG](docs/diagrams/github-copilot-metrics-architecture.png) and
+[editable Mermaid source](docs/diagrams/github-copilot-metrics-architecture.mmd).
+See [How the repository works](docs/how-it-works.md) for the detailed
+deployment, security, data-flow, and operational model.
 
 ```text
 GitHub Copilot metrics APIs

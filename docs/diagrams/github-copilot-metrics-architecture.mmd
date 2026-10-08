@@ -1,0 +1,95 @@
+flowchart TB
+    subgraph CONTROL["Bootstrap and deployment plane"]
+        direction LR
+        OPERATOR["Operator or CI runner"]
+        CLI["Setup scripts and<br/>ghcp-metrics CLI"]
+        IDENTITY["Azure Identity<br/>CLI, workload identity,<br/>service principal, or managed identity"]
+        RG["Azure resource group<br/>Create or reuse"]
+        KV["Azure Key Vault<br/>GitHub token secret"]
+
+        OPERATOR -->|"Plan, deploy, apply, resume"| CLI
+        CLI -->|"Authenticate"| IDENTITY
+        IDENTITY -.->|"Authorize management operations"| RG
+        CLI -.->|"Secure secret write and RBAC"| KV
+    end
+
+    GITHUB["GitHub Copilot metrics REST API"]
+
+    subgraph FABRIC["Microsoft Fabric workspace"]
+        direction TB
+
+        subgraph ORCHESTRATION["Orchestration and runtime"]
+            direction LR
+            ENV["Fabric Environment<br/>Project wheel and dependencies"]
+            SCHEDULE["Daily schedule or<br/>manual backfill"]
+            PIPELINE["Data Pipeline<br/>Bronze then Silver then Gold"]
+
+            SCHEDULE -->|"Typed run parameters"| PIPELINE
+        end
+
+        subgraph MEDALLION["OneLake medallion architecture"]
+            direction LR
+
+            subgraph BRONZE_STAGE["Bronze"]
+                direction TB
+                BRONZE_NOTEBOOK["Bronze notebook<br/>Secure ingestion"]
+                BRONZE[("Lakehouse Files<br/>Immutable NDJSON,<br/>manifests, attempt audit")]
+                BRONZE_NOTEBOOK -->|"Partition and retain"| BRONZE
+            end
+
+            subgraph SILVER_STAGE["Silver"]
+                direction TB
+                SILVER_NOTEBOOK["Silver notebook<br/>Validate and normalize"]
+                SILVER[("silver.* Delta tables<br/>Conformed rows, quarantine,<br/>drift, quality issues")]
+                SILVER_NOTEBOOK -->|"Atomic bounded MERGE"| SILVER
+            end
+
+            subgraph GOLD_STAGE["Gold"]
+                direction TB
+                GOLD_NOTEBOOK["Gold notebook<br/>Aggregate and measure freshness"]
+                GOLD[("gold.* and audit.*<br/>Reporting-ready facts<br/>and pipeline results")]
+                GOLD_NOTEBOOK -->|"Atomic bounded MERGE"| GOLD
+            end
+
+            BRONZE -->|"Selected successful ingestion"| SILVER_NOTEBOOK
+            SILVER -->|"Conformed history and correction window"| GOLD_NOTEBOOK
+        end
+
+        subgraph CONSUMPTION["Analytics consumption"]
+            direction LR
+            MODEL["Direct Lake semantic model<br/>TMDL"]
+            REPORT["Power BI report<br/>PBIR"]
+            MODEL -->|"Measures and relationships"| REPORT
+        end
+
+        PIPELINE -->|"Succeeded dependency"| BRONZE_NOTEBOOK
+        ENV -.->|"Spark runtime"| BRONZE_NOTEBOOK
+        ENV -.->|"Spark runtime"| SILVER_NOTEBOOK
+        ENV -.->|"Spark runtime"| GOLD_NOTEBOOK
+        GOLD -->|"Direct Lake"| MODEL
+    end
+
+    MONITOR["Operations and monitoring<br/>Run status, audit, freshness,<br/>quarantine, and schema drift"]
+
+    CLI -.->|"Deploy environment, notebooks,<br/>pipeline, model, report, and schedule"| FABRIC
+    KV -->|"Secret read by Fabric run identity"| BRONZE_NOTEBOOK
+    BRONZE_NOTEBOOK -->|"Metadata and short-lived downloads"| GITHUB
+    PIPELINE -->|"Activity and retry status"| MONITOR
+    SILVER -->|"Quality surfaces"| MONITOR
+    GOLD -->|"Audit and freshness"| MONITOR
+
+    classDef external fill:#F7F7F7,stroke:#5C5C5C,color:#1F1F1F,stroke-width:1.5px;
+    classDef azure fill:#E6F2FF,stroke:#0078D4,color:#003B5C,stroke-width:1.5px;
+    classDef security fill:#FFF4CE,stroke:#D83B01,color:#4F2A00,stroke-width:1.5px;
+    classDef fabric fill:#F3E8FF,stroke:#742774,color:#3B1647,stroke-width:1.5px;
+    classDef data fill:#E8F5E9,stroke:#107C10,color:#123812,stroke-width:1.5px;
+    classDef analytics fill:#FFF4CE,stroke:#F2C811,color:#3B3300,stroke-width:1.5px;
+    classDef operations fill:#EDEBE9,stroke:#605E5C,color:#201F1E,stroke-width:1.5px;
+
+    class OPERATOR,GITHUB external;
+    class CLI,IDENTITY,RG azure;
+    class KV security;
+    class ENV,SCHEDULE,PIPELINE,BRONZE_NOTEBOOK,SILVER_NOTEBOOK,GOLD_NOTEBOOK fabric;
+    class BRONZE,SILVER,GOLD data;
+    class MODEL,REPORT analytics;
+    class MONITOR operations;
