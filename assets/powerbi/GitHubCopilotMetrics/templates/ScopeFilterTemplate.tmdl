@@ -1,0 +1,8 @@
+// OPTIONAL TEMPLATE ONLY - intentionally outside definition/.
+// Replace FALSE() with a reviewed authorized-scope predicate on every exposed
+// fact before enabling the role. Configure role membership in Power BI.
+role 'Scope Filter Template'
+	modelPermission: read
+	tablePermission 'Entity Adoption Daily' = ```
+FALSE()
+```

@@ -1,0 +1,43 @@
+table Date
+	lineageTag: 4ffbf09c-c658-4c3e-aea1-eae326bd86ec
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		isKey
+
+	column Year
+		dataType: int64
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+
+	column Month
+		dataType: string
+		sortByColumn: 'Month Number'
+
+	column 'Year Month'
+		dataType: string
+		sortByColumn: 'Year Month Number'
+
+	column 'Year Month Number'
+		dataType: int64
+		isHidden
+
+	partition Date = calculated
+		mode: import
+		source = ```
+VAR _start = DATE ( 2020, 1, 1 )
+VAR _end = DATE ( 2035, 12, 31 )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR ( _start, _end ),
+        "Year", YEAR ( [Date] ),
+        "Month Number", MONTH ( [Date] ),
+        "Month", FORMAT ( [Date], "mmm" ),
+        "Year Month", FORMAT ( [Date], "yyyy-mmm" ),
+        "Year Month Number", YEAR ( [Date] ) * 100 + MONTH ( [Date] )
+    )
+```

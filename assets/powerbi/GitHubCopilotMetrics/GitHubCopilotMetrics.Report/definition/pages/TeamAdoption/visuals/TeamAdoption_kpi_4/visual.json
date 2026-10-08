@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "TeamAdoption_kpi_4",
+  "position": {
+    "x": 48,
+    "y": 404,
+    "z": 4,
+    "height": 220,
+    "width": 556,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Team Adoption Daily"
+                    }
+                  },
+                  "Property": "Team Additivity Warning"
+                }
+              },
+              "queryRef": "Team Adoption Daily.Team Additivity Warning",
+              "nativeQueryRef": "Team Additivity Warning"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
