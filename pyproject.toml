@@ -47,10 +47,6 @@ Repository = "https://github.com/"
 [tool.hatch.build.targets.wheel]
 packages = ["src/copilot_metrics_fabric"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"fabric" = "copilot_metrics_fabric/_deployment_assets/fabric"
-"assets" = "copilot_metrics_fabric/_deployment_assets/assets"
-
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]

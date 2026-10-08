@@ -53,13 +53,15 @@ def test_direct_lake_tables_match_finalized_gold_contracts():
         assert f"entityName: {table_name}" in table_text
         for column in contract["columns"]:
             assert f"sourceColumn: {column['name']}" in table_text
-    assert table_text.count("mode: directLake") == len(contracts()) - 2
+    # Eight Gold fact tables plus the physical Direct Lake date dimension.
+    assert table_text.count("mode: directLake") == len(contracts()) - 1
 
 
 def test_date_table_relationships_and_direct_lake_connection_exist():
     date = read(MODEL / "tables" / "Date.tmdl")
     assert "table Date" in date
-    assert "CALENDAR ( _start, _end )" in date
+    assert "entityName: date_dimension" in date
+    assert "mode: directLake" in date
     relationships = read(MODEL / "relationships.tmdl")
     assert relationships.count("toColumn: Date.Date") == 8
     connection = read(MODEL / "expressions.tmdl")

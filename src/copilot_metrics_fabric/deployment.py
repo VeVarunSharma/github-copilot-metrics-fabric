@@ -1298,15 +1298,7 @@ def _report_parts(
         "version": "4.0",
         "datasetReference": {
             "byConnection": {
-                "connectionString": (
-                    "Data Source=powerbi://api.powerbi.com/v1.0/myorg/"
-                    f"{workspace_name};Initial Catalog={model_name};"
-                    "Integrated Security=ClaimsToken"
-                ),
-                "pbiServiceModelId": model_id,
-                "pbiModelVirtualServerName": "sobe_wowvirtualserver",
-                "connectionType": "pbiServiceXmlaStyleLive",
-                "name": "EntityDataSource",
+                "connectionString": f"semanticModelId={model_id}",
             }
         },
     }

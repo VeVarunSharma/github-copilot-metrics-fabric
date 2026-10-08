@@ -1,7 +1,7 @@
-        expression DirectLakeConnection = ```
-        let
-            Source = Sql.Database("<SQL_ENDPOINT>", "<SQL_DATABASE>")
-        in
-            Source
+expression DirectLakeConnection = ```
+let
+    Source = Sql.Database("<SQL_ENDPOINT>", "<SQL_DATABASE>")
+in
+    Source
 ```
 	lineageTag: 3c13361c-0efe-4da2-a602-fdeebec3c0a1

@@ -422,11 +422,11 @@ def write_model() -> None:
         encoding="utf-8",
     )
     (DEFINITION / "expressions.tmdl").write_text(
-        """        expression DirectLakeConnection = ```
-        let
-            Source = Sql.Database("<SQL_ENDPOINT>", "<SQL_DATABASE>")
-        in
-            Source
+        """expression DirectLakeConnection = ```
+let
+    Source = Sql.Database("<SQL_ENDPOINT>", "<SQL_DATABASE>")
+in
+    Source
 ```
 \tlineageTag: 3c13361c-0efe-4da2-a602-fdeebec3c0a1
 """,
@@ -499,43 +499,40 @@ def write_model() -> None:
 
 \tcolumn Date
 \t\tdataType: dateTime
+\t\tsourceColumn: date
 \t\tformatString: yyyy-mm-dd
 \t\tisKey
 
 \tcolumn Year
 \t\tdataType: int64
+\t\tsourceColumn: year
 
 \tcolumn 'Month Number'
 \t\tdataType: int64
+\t\tsourceColumn: month_number
 \t\tisHidden
 
 \tcolumn Month
 \t\tdataType: string
+\t\tsourceColumn: month
 \t\tsortByColumn: 'Month Number'
 
 \tcolumn 'Year Month'
 \t\tdataType: string
+\t\tsourceColumn: year_month
 \t\tsortByColumn: 'Year Month Number'
 
 \tcolumn 'Year Month Number'
 \t\tdataType: int64
+\t\tsourceColumn: year_month_number
 \t\tisHidden
 
-\tpartition Date = calculated
-\t\tmode: import
-\t\tsource = ```
-VAR _start = DATE ( 2020, 1, 1 )
-VAR _end = DATE ( 2035, 12, 31 )
-RETURN
-    ADDCOLUMNS (
-        CALENDAR ( _start, _end ),
-        "Year", YEAR ( [Date] ),
-        "Month Number", MONTH ( [Date] ),
-        "Month", FORMAT ( [Date], "mmm" ),
-        "Year Month", FORMAT ( [Date], "yyyy-mmm" ),
-        "Year Month Number", YEAR ( [Date] ) * 100 + MONTH ( [Date] )
-    )
-```
+\tpartition Date = entity
+\t\tmode: directLake
+\t\tsource
+\t\t\tentityName: date_dimension
+\t\t\tschemaName: gold
+\t\t\texpressionSource: DirectLakeConnection
 """,
         encoding="utf-8",
     )
@@ -711,11 +708,14 @@ def write_report() -> None:
             "themeCollection": {
                 "baseTheme": {
                     "name": "CY24SU10",
-                    "reportVersionAtImport": "5.60",
+                    "reportVersionAtImport": {
+                        "visual": "3.0.0",
+                        "page": "3.0.0",
+                        "report": "3.0.0",
+                    },
                     "type": "SharedResources",
                 }
             },
-            "layoutOptimization": "None",
         },
     )
     page_order = []
