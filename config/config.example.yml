@@ -1,0 +1,91 @@
+# This file contains names and preferences only. Never add credentials,
+# customer data, tenant IDs, workspace IDs, tokens, passwords, or secrets.
+# Set GITHUB_TOKEN in the runtime environment, or inject a secret-backed token
+# provider in code. The token is intentionally not part of this contract.
+schema_version: 1
+
+github:
+  # Usage-report requests use X-GitHub-Api-Version: 2026-03-10.
+  # organization: collect each organization listed below.
+  # enterprise: collect the single `enterprise` scope; organizations is
+  #             accepted as an optional allowlist but is not fanned out by
+  #             the current collector.
+  mode: organization
+  organizations:
+    - example-organization
+  # For enterprise mode, uncomment the next line and set mode: enterprise.
+  # enterprise: example-enterprise
+
+collection:
+  # Local Python collection uses this rolling window. The deployed pipeline
+  # uses its separate trailing_days runtime parameter (default 28).
+  lookback_days: 28
+  # Relative local Bronze root. The deployed notebook instead uses
+  # /lakehouse/default/Files plus bronze_folder=bronze.
+  output_directory: data/raw
+
+azure:
+  # These are identifiers and create-or-reuse preferences only. Authentication
+  # comes from Azure Identity. No token or secret value belongs in this file.
+  subscription_id: null
+  resource_group_name: github-copilot-metrics
+  location: eastus2
+  create_resource_group: false
+  key_vault_name: null
+  create_key_vault: false
+  # This is the name of a Key Vault secret, never its value.
+  github_token_secret_name: github-copilot-metrics-token
+  # Optional when Fabric runs under a different identity than bootstrap.
+  # This is an Entra object ID, not a client/application ID.
+  fabric_runtime_principal_id: null
+  fabric_runtime_principal_type: ServicePrincipal
+
+fabric:
+  # Deployment resolves all IDs from these display names.
+  workspace_name: GitHub Copilot Metrics
+  lakehouse_name: GitHubCopilotMetrics
+  # Set true to allow deploy to create a missing workspace. Dry-runs never
+  # create resources. capacity_id is optional when the tenant can create an
+  # unassigned workspace; otherwise set an existing Fabric capacity ID.
+  # The CLI never creates or purchases capacity.
+  create_workspace: false
+  capacity_id: null
+  pipeline_name: copilot_metrics_orchestration
+  semantic_model_name: GitHubCopilotMetrics
+  report_name: GitHubCopilotMetrics
+  # Deploy builds this project's wheel, creates or reuses the Environment,
+  # updates and publishes its public definition, and sets it as the workspace
+  # default. Set create_environment false to require an existing exact name.
+  environment_name: GitHubCopilotMetrics
+  create_environment: false
+  # Credential-free IDs and hashes for resume/skip behavior. Preserve for the
+  # same target; delete only to force definition updates.
+  state_file: .fabric-deploy-state.json
+  # Typed runtime parameters used by on-demand and scheduled pipeline jobs.
+  report_types: [entity, users, user-teams, repositories]
+  calculation_lookback_days: 27
+  earliest_date: null
+  lakehouse_files_root: /lakehouse/default/Files
+  bronze_folder: bronze
+  silver_schema: silver
+  gold_schema: gold
+  audit_schema: audit
+  telemetry_lag_days: 2
+
+backfill:
+  # Dates are inclusive. They are ignored while enabled is false.
+  enabled: false
+  start_date: 2026-09-01
+  end_date: 2026-09-30
+  # false returns Fabric job instance IDs without polling.
+  wait_for_completion: true
+
+schedule:
+  # Bootstrap jobs reconcile one managed schedule per scope while preserving
+  # schedules not marked as bootstrap-managed. timezone must be an exact
+  # Fabric-supported Windows time-zone ID, such as UTC, Pacific Standard Time,
+  # UTC-11, or UTC+12 (not an IANA name such as America/Los_Angeles).
+  enabled: true
+  time: "02:00"
+  timezone: UTC
+  trailing_days: 28

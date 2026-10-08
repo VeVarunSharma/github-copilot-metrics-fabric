@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/platformProperties.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "Copilot Metrics Orchestration",
+    "description": "Parameterized Bronze to Silver to Gold orchestration."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "copilot-metrics-orchestration"
+  }
+}

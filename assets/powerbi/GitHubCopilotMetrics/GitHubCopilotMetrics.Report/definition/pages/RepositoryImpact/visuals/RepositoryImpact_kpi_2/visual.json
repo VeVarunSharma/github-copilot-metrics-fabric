@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "RepositoryImpact_kpi_2",
+  "position": {
+    "x": 652,
+    "y": 144,
+    "z": 2,
+    "height": 220,
+    "width": 556,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Repository Impact Daily"
+                    }
+                  },
+                  "Property": "Copilot Authored PR Rate"
+                }
+              },
+              "queryRef": "Repository Impact Daily.Copilot Authored PR Rate",
+              "nativeQueryRef": "Copilot Authored PR Rate"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

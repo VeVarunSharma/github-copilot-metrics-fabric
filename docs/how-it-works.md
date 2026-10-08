@@ -6,11 +6,6 @@ package and deployment CLI, Azure Key Vault, Microsoft Fabric deployment
 assets, a OneLake medallion architecture, a Direct Lake semantic model, and a
 Power BI report.
 
-> [!NOTE]
-> This document was derived from the implementation assets on the
-> `vevarunsharma-ghcp-fabric-starter` branch. At generation time, the default
-> `main` branch contained only the seed README.
-
 ## Architecture diagram
 
 ![GitHub Copilot Metrics for Microsoft Fabric architecture](diagrams/github-copilot-metrics-architecture.svg)

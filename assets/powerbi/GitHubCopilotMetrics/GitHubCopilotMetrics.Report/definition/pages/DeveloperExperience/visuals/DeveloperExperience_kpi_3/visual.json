@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "DeveloperExperience_kpi_3",
+  "position": {
+    "x": 1256,
+    "y": 144,
+    "z": 3,
+    "height": 220,
+    "width": 556,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Feature Usage Daily"
+                    }
+                  },
+                  "Property": "Feature Adoption Rate"
+                }
+              },
+              "queryRef": "Feature Usage Daily.Feature Adoption Rate",
+              "nativeQueryRef": "Feature Adoption Rate"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

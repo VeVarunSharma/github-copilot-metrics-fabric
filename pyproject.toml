@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "github-copilot-metrics-fabric"
+version = "0.1.0"
+description = "A forkable GitHub Copilot metrics starter for Microsoft Fabric"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "GitHub Copilot Metrics for Microsoft Fabric contributors" }]
+keywords = ["github-copilot", "microsoft-fabric", "analytics"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+  "azure-identity>=1.19,<2",
+  "PyYAML>=6.0.2,<7",
+  "requests>=2.32,<3",
+  "PyJWT[crypto]>=2.10,<3",
+  "pyodbc>=5.2,<6",
+  "tzdata>=2025.2; platform_system == 'Windows'",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2.2,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.9,<1",
+]
+
+[project.scripts]
+ghcp-metrics = "copilot_metrics_fabric.cli:main"
+
+[project.urls]
+Repository = "https://github.com/"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/copilot_metrics_fabric"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+markers = [
+  "integration: credential-gated tests that contact GitHub or Microsoft Fabric",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["copilot_metrics_fabric"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

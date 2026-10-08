@@ -1,0 +1,154 @@
+table 'Team Adoption Daily'
+	lineageTag: 4e6d5533-562b-5f23-922f-8f71d4974e4d
+
+	column scope_kind
+		dataType: string
+		sourceColumn: scope_kind
+		displayFolder: Dimensions
+
+	column scope_slug
+		dataType: string
+		sourceColumn: scope_slug
+		displayFolder: Dimensions
+
+	column day
+		dataType: dateTime
+		sourceColumn: day
+		formatString: yyyy-mm-dd
+		displayFolder: Metrics
+
+	column day_key
+		dataType: int64
+		sourceColumn: day_key
+		isHidden
+		displayFolder: Technical
+
+	column gold_built_at
+		dataType: string
+		sourceColumn: gold_built_at
+		isHidden
+		displayFolder: Technical
+
+	column source_correction_count
+		dataType: int64
+		sourceColumn: source_correction_count
+		isHidden
+		displayFolder: Technical
+
+	column team_id
+		dataType: int64
+		sourceColumn: team_id
+		displayFolder: Dimensions
+
+	column team_slug
+		dataType: string
+		sourceColumn: team_slug
+		displayFolder: Dimensions
+
+	column observed_users
+		dataType: int64
+		sourceColumn: observed_users
+		displayFolder: Metrics
+
+	column active_users
+		dataType: int64
+		sourceColumn: active_users
+		displayFolder: Metrics
+
+	column engaged_users
+		dataType: int64
+		sourceColumn: engaged_users
+		displayFolder: Metrics
+
+	column interaction_count
+		dataType: int64
+		sourceColumn: interaction_count
+		displayFolder: Metrics
+
+	column generation_count
+		dataType: int64
+		sourceColumn: generation_count
+		displayFolder: Metrics
+
+	column acceptance_count
+		dataType: int64
+		sourceColumn: acceptance_count
+		displayFolder: Metrics
+
+	column acceptance_rate
+		dataType: double
+		sourceColumn: acceptance_rate
+		isHidden
+		displayFolder: Technical
+
+	column loc_suggested
+		dataType: int64
+		sourceColumn: loc_suggested
+		displayFolder: Metrics
+
+	column loc_accepted
+		dataType: int64
+		sourceColumn: loc_accepted
+		displayFolder: Metrics
+
+	column loc_acceptance_rate
+		dataType: double
+		sourceColumn: loc_acceptance_rate
+		isHidden
+		displayFolder: Technical
+
+	column ai_credits_used
+		dataType: double
+		sourceColumn: ai_credits_used
+		displayFolder: Metrics
+
+	column membership_count
+		dataType: int64
+		sourceColumn: membership_count
+		displayFolder: Metrics
+
+	column allocation_method
+		dataType: string
+		sourceColumn: allocation_method
+		displayFolder: Dimensions
+
+	column is_additive
+		dataType: boolean
+		sourceColumn: is_additive
+		displayFolder: Dimensions
+
+	measure 'Team Active Users' = CALCULATE ( SUM ( 'Team Adoption Daily'[active_users] ), KEEPFILTERS ( 'Team Adoption Daily'[is_additive] = TRUE() ) )
+		lineageTag: 7fd1b6c5-1005-5900-b8bd-ab194e33132b
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Team Observed Users' = CALCULATE ( SUM ( 'Team Adoption Daily'[observed_users] ), KEEPFILTERS ( 'Team Adoption Daily'[is_additive] = TRUE() ) )
+		lineageTag: c1c1cce5-b596-5e1a-9de9-e2fb669aaf40
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Team Adoption Rate' = DIVIDE ( [Team Active Users], [Team Observed Users] )
+		lineageTag: 391d1ad6-2ebd-52dd-b40b-b84a1c61ccc1
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Team Acceptance Rate' = VAR _accepted = CALCULATE ( SUM ( 'Team Adoption Daily'[acceptance_count] ), KEEPFILTERS ( 'Team Adoption Daily'[is_additive] = TRUE() ) ) VAR _generated = CALCULATE ( SUM ( 'Team Adoption Daily'[generation_count] ), KEEPFILTERS ( 'Team Adoption Daily'[is_additive] = TRUE() ) ) RETURN DIVIDE ( _accepted, _generated )
+		lineageTag: 07b649f0-5916-53d9-8462-73938101ec3a
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Non-Additive Team Rows' = CALCULATE ( COUNTROWS ( 'Team Adoption Daily' ), KEEPFILTERS ( 'Team Adoption Daily'[is_additive] = FALSE() ) )
+		lineageTag: 452e9fe5-2ed9-53f7-bc86-0412bac204fd
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Team Additivity Warning' = IF ( [Non-Additive Team Rows] > 0, "Warning: all-memberships rows can double-count users; executive totals use primary-team rows only.", "Additive team allocation is available." )
+		lineageTag: b5b7d5fe-ff6b-5eba-a63a-1e6bdd0863fc
+		displayFolder: Measures
+
+	partition team_adoption_daily = entity
+		mode: directLake
+		source
+			entityName: team_adoption_daily
+			schemaName: gold
+			expressionSource: DirectLakeConnection

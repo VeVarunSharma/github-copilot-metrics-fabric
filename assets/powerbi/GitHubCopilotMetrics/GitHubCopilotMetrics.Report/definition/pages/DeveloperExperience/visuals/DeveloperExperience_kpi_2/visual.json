@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "DeveloperExperience_kpi_2",
+  "position": {
+    "x": 652,
+    "y": 144,
+    "z": 2,
+    "height": 220,
+    "width": 556,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Entity Adoption Daily"
+                    }
+                  },
+                  "Property": "AI Credits Used"
+                }
+              },
+              "queryRef": "Entity Adoption Daily.AI Credits Used",
+              "nativeQueryRef": "AI Credits Used"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

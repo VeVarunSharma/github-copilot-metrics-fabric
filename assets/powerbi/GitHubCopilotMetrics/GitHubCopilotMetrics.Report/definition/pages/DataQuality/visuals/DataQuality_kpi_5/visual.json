@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "DataQuality_kpi_5",
+  "position": {
+    "x": 652,
+    "y": 404,
+    "z": 5,
+    "height": 220,
+    "width": 556,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Team Adoption Daily"
+                    }
+                  },
+                  "Property": "Non-Additive Team Rows"
+                }
+              },
+              "queryRef": "Team Adoption Daily.Non-Additive Team Rows",
+              "nativeQueryRef": "Non-Additive Team Rows"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

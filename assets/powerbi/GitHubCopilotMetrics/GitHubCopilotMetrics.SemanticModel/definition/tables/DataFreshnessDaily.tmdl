@@ -1,0 +1,111 @@
+table 'Data Freshness Daily'
+	lineageTag: 7e2a3671-e22e-5b13-85e9-602d59541371
+
+	column scope_kind
+		dataType: string
+		sourceColumn: scope_kind
+		displayFolder: Dimensions
+
+	column scope_slug
+		dataType: string
+		sourceColumn: scope_slug
+		displayFolder: Dimensions
+
+	column day
+		dataType: dateTime
+		sourceColumn: day
+		formatString: yyyy-mm-dd
+		displayFolder: Metrics
+
+	column day_key
+		dataType: int64
+		sourceColumn: day_key
+		isHidden
+		displayFolder: Technical
+
+	column gold_built_at
+		dataType: string
+		sourceColumn: gold_built_at
+		isHidden
+		displayFolder: Technical
+
+	column source_correction_count
+		dataType: int64
+		sourceColumn: source_correction_count
+		isHidden
+		displayFolder: Technical
+
+	column report_type
+		dataType: string
+		sourceColumn: report_type
+		displayFolder: Dimensions
+
+	column availability_status
+		dataType: string
+		sourceColumn: availability_status
+		displayFolder: Dimensions
+
+	column has_data
+		dataType: boolean
+		sourceColumn: has_data
+		displayFolder: Dimensions
+
+	column is_no_data
+		dataType: boolean
+		sourceColumn: is_no_data
+		displayFolder: Dimensions
+
+	column is_complete
+		dataType: boolean
+		sourceColumn: is_complete
+		displayFolder: Dimensions
+
+	column is_within_telemetry_lag
+		dataType: boolean
+		sourceColumn: is_within_telemetry_lag
+		displayFolder: Dimensions
+
+	column days_late
+		dataType: int64
+		sourceColumn: days_late
+		displayFolder: Metrics
+
+	column latest_source_ingested_at
+		dataType: string
+		sourceColumn: latest_source_ingested_at
+		displayFolder: Dimensions
+
+	column sparse_metric_count
+		dataType: int64
+		sourceColumn: sparse_metric_count
+		displayFolder: Metrics
+
+	measure 'Incomplete Report Days' = CALCULATE ( COUNTROWS ( 'Data Freshness Daily' ), KEEPFILTERS ( 'Data Freshness Daily'[is_complete] = FALSE() ), KEEPFILTERS ( 'Data Freshness Daily'[is_within_telemetry_lag] = FALSE() ) )
+		lineageTag: a66b661e-6848-5825-808b-1d8e3704ff8b
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Maximum Days Late' = MAX ( 'Data Freshness Daily'[days_late] )
+		lineageTag: 334ceb54-7b13-5c07-aecb-13174ae6744c
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Sparse Metric Count' = SUM ( 'Data Freshness Daily'[sparse_metric_count] )
+		lineageTag: bcc94447-89df-5011-a57e-3848417c02f8
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Latest Source Ingested At' = MAX ( 'Data Freshness Daily'[latest_source_ingested_at] )
+		lineageTag: c14b6a04-cdc2-5638-b73a-450db66bf0db
+		displayFolder: Measures
+
+	measure 'Freshness Status' = IF ( [Incomplete Report Days] > 0, "Attention required", IF ( [Maximum Days Late] > 0, "Within telemetry lag", "Current" ) )
+		lineageTag: aa831499-ca29-515d-857b-4f88b152aa68
+		displayFolder: Measures
+
+	partition data_freshness_daily = entity
+		mode: directLake
+		source
+			entityName: data_freshness_daily
+			schemaName: gold
+			expressionSource: DirectLakeConnection

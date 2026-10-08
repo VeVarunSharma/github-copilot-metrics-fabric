@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "ExecutiveOverview_kpi_4",
+  "position": {
+    "x": 48,
+    "y": 404,
+    "z": 4,
+    "height": 220,
+    "width": 556,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Entity Adoption Daily"
+                    }
+                  },
+                  "Property": "Acceptance Rate"
+                }
+              },
+              "queryRef": "Entity Adoption Daily.Acceptance Rate",
+              "nativeQueryRef": "Acceptance Rate"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

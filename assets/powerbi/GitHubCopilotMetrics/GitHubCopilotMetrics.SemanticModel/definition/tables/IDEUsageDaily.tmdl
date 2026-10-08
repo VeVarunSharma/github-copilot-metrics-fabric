@@ -1,0 +1,105 @@
+table 'IDE Usage Daily'
+	lineageTag: a9eed9f7-64b1-5534-8743-dba81493dffb
+
+	column scope_kind
+		dataType: string
+		sourceColumn: scope_kind
+		displayFolder: Dimensions
+
+	column scope_slug
+		dataType: string
+		sourceColumn: scope_slug
+		displayFolder: Dimensions
+
+	column day
+		dataType: dateTime
+		sourceColumn: day
+		formatString: yyyy-mm-dd
+		displayFolder: Metrics
+
+	column day_key
+		dataType: int64
+		sourceColumn: day_key
+		isHidden
+		displayFolder: Technical
+
+	column gold_built_at
+		dataType: string
+		sourceColumn: gold_built_at
+		isHidden
+		displayFolder: Technical
+
+	column source_correction_count
+		dataType: int64
+		sourceColumn: source_correction_count
+		isHidden
+		displayFolder: Technical
+
+	column ide
+		dataType: string
+		sourceColumn: ide
+		displayFolder: Dimensions
+
+	column observed_users
+		dataType: int64
+		sourceColumn: observed_users
+		displayFolder: Metrics
+
+	column active_users
+		dataType: int64
+		sourceColumn: active_users
+		displayFolder: Metrics
+
+	column engaged_users
+		dataType: int64
+		sourceColumn: engaged_users
+		displayFolder: Metrics
+
+	column interaction_count
+		dataType: int64
+		sourceColumn: interaction_count
+		displayFolder: Metrics
+
+	column generation_count
+		dataType: int64
+		sourceColumn: generation_count
+		displayFolder: Metrics
+
+	column acceptance_count
+		dataType: int64
+		sourceColumn: acceptance_count
+		displayFolder: Metrics
+
+	column acceptance_rate
+		dataType: double
+		sourceColumn: acceptance_rate
+		isHidden
+		displayFolder: Technical
+
+	column loc_suggested
+		dataType: int64
+		sourceColumn: loc_suggested
+		displayFolder: Metrics
+
+	column loc_accepted
+		dataType: int64
+		sourceColumn: loc_accepted
+		displayFolder: Metrics
+
+	column loc_acceptance_rate
+		dataType: double
+		sourceColumn: loc_acceptance_rate
+		isHidden
+		displayFolder: Technical
+
+	column ai_credits_used
+		dataType: double
+		sourceColumn: ai_credits_used
+		displayFolder: Metrics
+
+	partition ide_usage_daily = entity
+		mode: directLake
+		source
+			entityName: ide_usage_daily
+			schemaName: gold
+			expressionSource: DirectLakeConnection

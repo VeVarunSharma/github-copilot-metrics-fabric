@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local configuration and generated data
+.env
+.env.*
+!.env.example
+config/config.yml
+config/*.local.yml
+config/*-poc.yml
+config/*.pem
+config/*.key
+config/*private-key*
+data/
+
+# Fabric and Power BI local state
+.fabric/
+.fabric-deploy-state.json
+.ghcp-bootstrap-state.json
+.ghcp-job-state.json
+*.pbix
