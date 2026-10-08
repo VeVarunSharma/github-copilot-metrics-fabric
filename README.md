@@ -8,6 +8,16 @@ building an analytics solution in Microsoft Fabric.
 > deployable Fabric notebook and pipeline definitions, Power BI project
 > assets, and an idempotent deployment CLI.
 
+# Live Deployment View
+
+<img width="1951" height="1157" alt="Screenshot 2026-10-08 102429" src="https://github.com/user-attachments/assets/32d391f6-c6fa-451c-9f79-785efd480426" />
+
+<img width="2251" height="1236" alt="Screenshot 2026-10-08 102336" src="https://github.com/user-attachments/assets/1c826164-5c6b-4165-9df3-6ba846bf0946" />
+
+<img width="491" height="672" alt="Screenshot 2026-10-08 102353" src="https://github.com/user-attachments/assets/8195ec52-cca1-4ea1-9f23-317a955f74bd" />
+
+
+
 ## Documentation
 
 - [One-command setup](docs/bootstrap-guide.md)
