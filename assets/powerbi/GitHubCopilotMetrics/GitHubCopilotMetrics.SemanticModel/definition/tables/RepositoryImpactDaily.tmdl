@@ -1,0 +1,161 @@
+table 'Repository Impact Daily'
+	lineageTag: 3f9aa21d-022f-5dda-865d-389d0c388626
+
+	column scope_kind
+		dataType: string
+		sourceColumn: scope_kind
+		displayFolder: Dimensions
+
+	column scope_slug
+		dataType: string
+		sourceColumn: scope_slug
+		displayFolder: Dimensions
+
+	column day
+		dataType: dateTime
+		sourceColumn: day
+		formatString: yyyy-mm-dd
+		displayFolder: Metrics
+
+	column day_key
+		dataType: int64
+		sourceColumn: day_key
+		isHidden
+		displayFolder: Technical
+
+	column gold_built_at
+		dataType: string
+		sourceColumn: gold_built_at
+		isHidden
+		displayFolder: Technical
+
+	column source_correction_count
+		dataType: int64
+		sourceColumn: source_correction_count
+		isHidden
+		displayFolder: Technical
+
+	column repo_id
+		dataType: int64
+		sourceColumn: repo_id
+		displayFolder: Dimensions
+
+	column repo_owner_name
+		dataType: string
+		sourceColumn: repo_owner_name
+		displayFolder: Dimensions
+
+	column repo_name
+		dataType: string
+		sourceColumn: repo_name
+		displayFolder: Dimensions
+
+	column repo_visibility
+		dataType: string
+		sourceColumn: repo_visibility
+		displayFolder: Dimensions
+
+	column pull_requests_created
+		dataType: int64
+		sourceColumn: pull_requests_created
+		displayFolder: Metrics
+
+	column pull_requests_created_by_copilot
+		dataType: int64
+		sourceColumn: pull_requests_created_by_copilot
+		displayFolder: Metrics
+
+	column copilot_authored_pr_rate
+		dataType: double
+		sourceColumn: copilot_authored_pr_rate
+		isHidden
+		displayFolder: Technical
+
+	column pull_requests_reviewed
+		dataType: int64
+		sourceColumn: pull_requests_reviewed
+		displayFolder: Metrics
+
+	column pull_requests_reviewed_by_copilot
+		dataType: int64
+		sourceColumn: pull_requests_reviewed_by_copilot
+		displayFolder: Metrics
+
+	column copilot_reviewed_pr_rate
+		dataType: double
+		sourceColumn: copilot_reviewed_pr_rate
+		isHidden
+		displayFolder: Technical
+
+	column suggestions
+		dataType: int64
+		sourceColumn: suggestions
+		displayFolder: Metrics
+
+	column applied_suggestions
+		dataType: int64
+		sourceColumn: applied_suggestions
+		displayFolder: Metrics
+
+	column suggestion_apply_rate
+		dataType: double
+		sourceColumn: suggestion_apply_rate
+		isHidden
+		displayFolder: Technical
+
+	column pull_requests_merged
+		dataType: int64
+		sourceColumn: pull_requests_merged
+		displayFolder: Metrics
+
+	column median_minutes_to_merge
+		dataType: double
+		sourceColumn: median_minutes_to_merge
+		displayFolder: Metrics
+
+	measure 'Pull Requests Created' = SUM ( 'Repository Impact Daily'[pull_requests_created] )
+		lineageTag: 219dcfcc-ddd0-5919-b90d-66d3cfa34df2
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Copilot Authored Pull Requests' = SUM ( 'Repository Impact Daily'[pull_requests_created_by_copilot] )
+		lineageTag: 38d8e751-47a4-5405-bac7-b4cda98996f4
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Copilot Authored PR Rate' = DIVIDE ( [Copilot Authored Pull Requests], [Pull Requests Created] )
+		lineageTag: 1601a45f-55e1-5785-b9af-fb0cff2a17b6
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Pull Requests Reviewed' = SUM ( 'Repository Impact Daily'[pull_requests_reviewed] )
+		lineageTag: 6830bc0e-bcfe-5586-b19f-3f94a990bd53
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Copilot Reviewed Pull Requests' = SUM ( 'Repository Impact Daily'[pull_requests_reviewed_by_copilot] )
+		lineageTag: 73b509e6-756d-5cf4-9511-20956c0a9efc
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Copilot Reviewed PR Rate' = DIVIDE ( [Copilot Reviewed Pull Requests], [Pull Requests Reviewed] )
+		lineageTag: b8100e2f-7137-547d-91ba-f1edad93d964
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Repository Suggestion Apply Rate' = DIVIDE ( SUM ( 'Repository Impact Daily'[applied_suggestions] ), SUM ( 'Repository Impact Daily'[suggestions] ) )
+		lineageTag: e8647721-d76a-5f1c-a999-95a5abcd87a1
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Median Minutes to Merge' = MEDIAN ( 'Repository Impact Daily'[median_minutes_to_merge] )
+		lineageTag: 9fac9607-850d-568c-886d-830a8c21f127
+		displayFolder: Measures
+		formatString: #,0.0
+
+	partition repository_copilot_impact_daily = entity
+		mode: directLake
+		source
+			entityName: repository_copilot_impact_daily
+			schemaName: gold
+			expressionSource: DirectLakeConnection

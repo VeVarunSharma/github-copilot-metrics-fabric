@@ -1,0 +1,40 @@
+table Date
+	lineageTag: 4ffbf09c-c658-4c3e-aea1-eae326bd86ec
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		sourceColumn: date
+		formatString: yyyy-mm-dd
+		isKey
+
+	column Year
+		dataType: int64
+		sourceColumn: year
+
+	column 'Month Number'
+		dataType: int64
+		sourceColumn: month_number
+		isHidden
+
+	column Month
+		dataType: string
+		sourceColumn: month
+		sortByColumn: 'Month Number'
+
+	column 'Year Month'
+		dataType: string
+		sourceColumn: year_month
+		sortByColumn: 'Year Month Number'
+
+	column 'Year Month Number'
+		dataType: int64
+		sourceColumn: year_month_number
+		isHidden
+
+	partition Date = entity
+		mode: directLake
+		source
+			entityName: date_dimension
+			schemaName: gold
+			expressionSource: DirectLakeConnection

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "ExecutiveOverview_trend",
+  "position": {
+    "x": 48,
+    "y": 680,
+    "z": 20,
+    "height": 340,
+    "width": 1764,
+    "tabOrder": 20
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Date"
+                    }
+                  },
+                  "Property": "Date"
+                }
+              },
+              "queryRef": "Date.Date",
+              "nativeQueryRef": "Date"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Entity Adoption Daily"
+                    }
+                  },
+                  "Property": "Daily Active Users"
+                }
+              },
+              "queryRef": "Entity Adoption Daily.Daily Active Users",
+              "nativeQueryRef": "Daily Active Users"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

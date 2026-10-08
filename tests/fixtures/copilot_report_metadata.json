@@ -1,0 +1,6 @@
+{
+  "download_links": [
+    "https://reports.example.test/copilot/report.ndjson?signature=sanitized&expires=1893456000"
+  ],
+  "report_day": "2025-10-13"
+}

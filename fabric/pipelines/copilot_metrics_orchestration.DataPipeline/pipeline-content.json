@@ -1,0 +1,478 @@
+{
+  "properties": {
+    "description": "Runs GitHub Copilot metrics Bronze, Silver, and Gold notebooks sequentially for daily trailing windows or explicit backfills.",
+    "parameters": {
+      "workspace_id": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "bronze_notebook_id": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "silver_notebook_id": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "gold_notebook_id": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "run_mode": {
+        "type": "string",
+        "defaultValue": "daily"
+      },
+      "bootstrap_signature": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "scope_kind": {
+        "type": "string",
+        "defaultValue": "organization"
+      },
+      "scope_slug": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "entity_type": {
+        "type": "string",
+        "defaultValue": "copilot_usage"
+      },
+      "report_types": {
+        "type": "string",
+        "defaultValue": "entity,users,user-teams,repositories"
+      },
+      "trailing_days": {
+        "type": "int",
+        "defaultValue": 28
+      },
+      "calculation_lookback_days": {
+        "type": "int",
+        "defaultValue": 27
+      },
+      "start_date": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "end_date": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "earliest_date": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "lakehouse_files_root": {
+        "type": "string",
+        "defaultValue": "/lakehouse/default/Files"
+      },
+      "bronze_folder": {
+        "type": "string",
+        "defaultValue": "bronze"
+      },
+      "silver_schema": {
+        "type": "string",
+        "defaultValue": "silver"
+      },
+      "gold_schema": {
+        "type": "string",
+        "defaultValue": "gold"
+      },
+      "audit_schema": {
+        "type": "string",
+        "defaultValue": "audit"
+      },
+      "telemetry_lag_days": {
+        "type": "int",
+        "defaultValue": 2
+      },
+      "key_vault_uri": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "github_token_secret_name": {
+        "type": "string",
+        "defaultValue": ""
+      }
+    },
+    "activities": [
+      {
+        "name": "Bronze ingestion",
+        "type": "TridentNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 60,
+          "secureInput": true,
+          "secureOutput": true
+        },
+        "typeProperties": {
+          "workspaceId": {
+            "value": "@pipeline().parameters.workspace_id",
+            "type": "Expression"
+          },
+          "notebookId": {
+            "value": "@pipeline().parameters.bronze_notebook_id",
+            "type": "Expression"
+          },
+          "parameters": {
+            "run_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "run_mode": {
+              "value": {
+                "value": "@pipeline().parameters.run_mode",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "scope_kind": {
+              "value": {
+                "value": "@pipeline().parameters.scope_kind",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "scope_slug": {
+              "value": {
+                "value": "@pipeline().parameters.scope_slug",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "entity_type": {
+              "value": {
+                "value": "@pipeline().parameters.entity_type",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "report_types": {
+              "value": {
+                "value": "@pipeline().parameters.report_types",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "trailing_days": {
+              "value": {
+                "value": "@pipeline().parameters.trailing_days",
+                "type": "Expression"
+              },
+              "type": "int"
+            },
+            "start_date": {
+              "value": {
+                "value": "@if(and(not(empty(pipeline().parameters.earliest_date)), greater(pipeline().parameters.earliest_date, if(equals(pipeline().parameters.run_mode, 'backfill'), formatDateTime(addDays(pipeline().parameters.start_date, mul(-1, pipeline().parameters.calculation_lookback_days)), 'yyyy-MM-dd'), formatDateTime(addDays(utcNow(), mul(-1, add(pipeline().parameters.trailing_days, pipeline().parameters.calculation_lookback_days))), 'yyyy-MM-dd')))), pipeline().parameters.earliest_date, if(equals(pipeline().parameters.run_mode, 'backfill'), formatDateTime(addDays(pipeline().parameters.start_date, mul(-1, pipeline().parameters.calculation_lookback_days)), 'yyyy-MM-dd'), formatDateTime(addDays(utcNow(), mul(-1, add(pipeline().parameters.trailing_days, pipeline().parameters.calculation_lookback_days))), 'yyyy-MM-dd')))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "end_date": {
+              "value": {
+                "value": "@if(equals(pipeline().parameters.run_mode, 'backfill'), pipeline().parameters.end_date, formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd'))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "replacement_start_date": {
+              "value": {
+                "value": "@if(equals(pipeline().parameters.run_mode, 'backfill'), pipeline().parameters.start_date, formatDateTime(addDays(utcNow(), mul(-1, pipeline().parameters.trailing_days)), 'yyyy-MM-dd'))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_files_root": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_files_root",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "bronze_folder": {
+              "value": {
+                "value": "@pipeline().parameters.bronze_folder",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "audit_schema": {
+              "value": {
+                "value": "@pipeline().parameters.audit_schema",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "key_vault_uri": {
+              "value": {
+                "value": "@pipeline().parameters.key_vault_uri",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "github_token_secret_name": {
+              "value": {
+                "value": "@pipeline().parameters.github_token_secret_name",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "Silver normalization",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Bronze ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 60,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "workspaceId": {
+            "value": "@pipeline().parameters.workspace_id",
+            "type": "Expression"
+          },
+          "notebookId": {
+            "value": "@pipeline().parameters.silver_notebook_id",
+            "type": "Expression"
+          },
+          "parameters": {
+            "run_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "run_mode": {
+              "value": {
+                "value": "@pipeline().parameters.run_mode",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "scope_kind": {
+              "value": {
+                "value": "@pipeline().parameters.scope_kind",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "scope_slug": {
+              "value": {
+                "value": "@pipeline().parameters.scope_slug",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "entity_type": {
+              "value": {
+                "value": "@pipeline().parameters.entity_type",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "start_date": {
+              "value": {
+                "value": "@if(and(not(empty(pipeline().parameters.earliest_date)), greater(pipeline().parameters.earliest_date, if(equals(pipeline().parameters.run_mode, 'backfill'), formatDateTime(addDays(pipeline().parameters.start_date, mul(-1, pipeline().parameters.calculation_lookback_days)), 'yyyy-MM-dd'), formatDateTime(addDays(utcNow(), mul(-1, add(pipeline().parameters.trailing_days, pipeline().parameters.calculation_lookback_days))), 'yyyy-MM-dd')))), pipeline().parameters.earliest_date, if(equals(pipeline().parameters.run_mode, 'backfill'), formatDateTime(addDays(pipeline().parameters.start_date, mul(-1, pipeline().parameters.calculation_lookback_days)), 'yyyy-MM-dd'), formatDateTime(addDays(utcNow(), mul(-1, add(pipeline().parameters.trailing_days, pipeline().parameters.calculation_lookback_days))), 'yyyy-MM-dd')))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "end_date": {
+              "value": {
+                "value": "@if(equals(pipeline().parameters.run_mode, 'backfill'), pipeline().parameters.end_date, formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd'))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_files_root": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_files_root",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "bronze_folder": {
+              "value": {
+                "value": "@pipeline().parameters.bronze_folder",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "silver_schema": {
+              "value": {
+                "value": "@pipeline().parameters.silver_schema",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "audit_schema": {
+              "value": {
+                "value": "@pipeline().parameters.audit_schema",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "Gold materialization",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Silver normalization",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 60,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "workspaceId": {
+            "value": "@pipeline().parameters.workspace_id",
+            "type": "Expression"
+          },
+          "notebookId": {
+            "value": "@pipeline().parameters.gold_notebook_id",
+            "type": "Expression"
+          },
+          "parameters": {
+            "run_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "run_mode": {
+              "value": {
+                "value": "@pipeline().parameters.run_mode",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "bootstrap_signature": {
+              "value": {
+                "value": "@pipeline().parameters.bootstrap_signature",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "scope_kind": {
+              "value": {
+                "value": "@pipeline().parameters.scope_kind",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "scope_slug": {
+              "value": {
+                "value": "@pipeline().parameters.scope_slug",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "entity_type": {
+              "value": {
+                "value": "@pipeline().parameters.entity_type",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "start_date": {
+              "value": {
+                "value": "@if(equals(pipeline().parameters.run_mode, 'backfill'), pipeline().parameters.start_date, formatDateTime(addDays(utcNow(), mul(-1, pipeline().parameters.trailing_days)), 'yyyy-MM-dd'))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "end_date": {
+              "value": {
+                "value": "@if(equals(pipeline().parameters.run_mode, 'backfill'), pipeline().parameters.end_date, formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd'))",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_files_root": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_files_root",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "bronze_folder": {
+              "value": {
+                "value": "@pipeline().parameters.bronze_folder",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "report_types": {
+              "value": {
+                "value": "@pipeline().parameters.report_types",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "silver_schema": {
+              "value": {
+                "value": "@pipeline().parameters.silver_schema",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "gold_schema": {
+              "value": {
+                "value": "@pipeline().parameters.gold_schema",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "audit_schema": {
+              "value": {
+                "value": "@pipeline().parameters.audit_schema",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "telemetry_lag_days": {
+              "value": {
+                "value": "@pipeline().parameters.telemetry_lag_days",
+                "type": "Expression"
+              },
+              "type": "int"
+            }
+          }
+        }
+      }
+    ],
+    "annotations": [
+      "github-copilot-metrics",
+      "medallion"
+    ]
+  }
+}

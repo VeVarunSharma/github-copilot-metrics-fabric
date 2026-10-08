@@ -1,0 +1,180 @@
+table 'Entity Adoption Daily'
+	lineageTag: 6906a386-c69e-5d9d-af1d-ac4a76068bfc
+
+	column scope_kind
+		dataType: string
+		sourceColumn: scope_kind
+		displayFolder: Dimensions
+
+	column scope_slug
+		dataType: string
+		sourceColumn: scope_slug
+		displayFolder: Dimensions
+
+	column day
+		dataType: dateTime
+		sourceColumn: day
+		formatString: yyyy-mm-dd
+		displayFolder: Metrics
+
+	column day_key
+		dataType: int64
+		sourceColumn: day_key
+		isHidden
+		displayFolder: Technical
+
+	column gold_built_at
+		dataType: string
+		sourceColumn: gold_built_at
+		isHidden
+		displayFolder: Technical
+
+	column source_correction_count
+		dataType: int64
+		sourceColumn: source_correction_count
+		isHidden
+		displayFolder: Technical
+
+	column observed_users
+		dataType: int64
+		sourceColumn: observed_users
+		displayFolder: Metrics
+
+	column active_users
+		dataType: int64
+		sourceColumn: active_users
+		displayFolder: Metrics
+
+	column engaged_users
+		dataType: int64
+		sourceColumn: engaged_users
+		displayFolder: Metrics
+
+	column interaction_count
+		dataType: int64
+		sourceColumn: interaction_count
+		displayFolder: Metrics
+
+	column generation_count
+		dataType: int64
+		sourceColumn: generation_count
+		displayFolder: Metrics
+
+	column acceptance_count
+		dataType: int64
+		sourceColumn: acceptance_count
+		displayFolder: Metrics
+
+	column acceptance_rate
+		dataType: double
+		sourceColumn: acceptance_rate
+		isHidden
+		displayFolder: Technical
+
+	column loc_suggested
+		dataType: int64
+		sourceColumn: loc_suggested
+		displayFolder: Metrics
+
+	column loc_accepted
+		dataType: int64
+		sourceColumn: loc_accepted
+		displayFolder: Metrics
+
+	column loc_acceptance_rate
+		dataType: double
+		sourceColumn: loc_acceptance_rate
+		isHidden
+		displayFolder: Technical
+
+	column ai_credits_used
+		dataType: double
+		sourceColumn: ai_credits_used
+		displayFolder: Metrics
+
+	column source_reported_daily_active_users
+		dataType: int64
+		sourceColumn: source_reported_daily_active_users
+		displayFolder: Metrics
+
+	column source_reported_weekly_active_users
+		dataType: int64
+		sourceColumn: source_reported_weekly_active_users
+		displayFolder: Metrics
+
+	column source_reported_monthly_active_users
+		dataType: int64
+		sourceColumn: source_reported_monthly_active_users
+		displayFolder: Metrics
+
+	measure 'Daily Active Users' = SUM ( 'Entity Adoption Daily'[active_users] )
+		lineageTag: e40b0e95-6a8c-577b-b4dc-8574f837c820
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Observed Users' = SUM ( 'Entity Adoption Daily'[observed_users] )
+		lineageTag: d3f29273-71cd-517b-90b8-20a29668ce4e
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Engaged Users' = SUM ( 'Entity Adoption Daily'[engaged_users] )
+		lineageTag: 3792735f-1abb-5c82-a6c3-192d395132b1
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Engagement Rate' = DIVIDE ( [Engaged Users], [Observed Users] )
+		lineageTag: f39ec3df-d36c-5e60-9bbf-cc4a1ba01597
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Generations' = SUM ( 'Entity Adoption Daily'[generation_count] )
+		lineageTag: 9ee8ba80-8d2d-57cb-adf3-5d03056d1b66
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Acceptances' = SUM ( 'Entity Adoption Daily'[acceptance_count] )
+		lineageTag: ce20af7b-a3a2-5d4a-a8ed-87402a48e86e
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Acceptance Rate' = DIVIDE ( [Acceptances], [Generations] )
+		lineageTag: e3961bc6-493f-5fdb-917b-a15578d85e6a
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Lines Suggested' = SUM ( 'Entity Adoption Daily'[loc_suggested] )
+		lineageTag: da494b01-0ec8-5808-88d3-35f72c90fbc2
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'Lines Accepted' = SUM ( 'Entity Adoption Daily'[loc_accepted] )
+		lineageTag: 5efc028b-ac5c-5c3e-9c26-672418286906
+		displayFolder: Measures
+		formatString: #,0
+
+	measure 'LOC Acceptance Rate' = DIVIDE ( [Lines Accepted], [Lines Suggested] )
+		lineageTag: 0f94a2dd-4d0b-54a7-9586-ab72d45447a8
+		displayFolder: Measures
+		formatString: 0.0%
+
+	measure 'Interactions per Active User' = DIVIDE ( SUM ( 'Entity Adoption Daily'[interaction_count] ), [Daily Active Users] )
+		lineageTag: 302d5e90-a971-5f90-9533-eecf43f78799
+		displayFolder: Measures
+		formatString: 0.00
+
+	measure 'AI Credits Used' = SUM ( 'Entity Adoption Daily'[ai_credits_used] )
+		lineageTag: 64037e28-2d71-52fc-b916-01418f2bfe35
+		displayFolder: Measures
+		formatString: #,0.00
+
+	measure 'Latest Metric Date' = MAX ( 'Entity Adoption Daily'[day] )
+		lineageTag: 2e994aef-861c-5c0e-ab63-e6d089a21b1b
+		displayFolder: Measures
+		formatString: yyyy-mm-dd
+
+	partition entity_adoption_daily = entity
+		mode: directLake
+		source
+			entityName: entity_adoption_daily
+			schemaName: gold
+			expressionSource: DirectLakeConnection

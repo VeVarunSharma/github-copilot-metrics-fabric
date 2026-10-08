@@ -1,0 +1,39 @@
+relationship d1f4d921-48c4-5bc1-8eca-52c0aba10563
+	fromColumn: 'Entity Adoption Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship 1123e0d5-de4e-5671-aafd-ad84aab1972d
+	fromColumn: 'Team Adoption Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship cfd26bd4-8c11-5ac7-99da-1f6795750d4b
+	fromColumn: 'Repository Impact Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship c379b188-4bc7-5c99-83e0-9d6ebcffe8bf
+	fromColumn: 'Feature Usage Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship d9b772c2-887f-5e3f-9625-c4a45d0761ad
+	fromColumn: 'Language Usage Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship e9bb1aa0-9ed8-582c-a796-77299dc61e67
+	fromColumn: 'IDE Usage Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship ac72e7ed-1193-5c17-9f5d-c7ba7e2a08c7
+	fromColumn: 'Adoption Rolling Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection
+
+relationship 8725c5d1-50d1-5fda-a16e-c9a8012adf73
+	fromColumn: 'Data Freshness Daily'.day
+	toColumn: Date.Date
+	crossFilteringBehavior: oneDirection

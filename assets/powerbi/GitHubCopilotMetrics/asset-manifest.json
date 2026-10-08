@@ -1,0 +1,73 @@
+{
+  "semanticModel": "GitHubCopilotMetrics",
+  "storageMode": "DirectLake",
+  "goldSchema": "gold",
+  "sourceTables": [
+    "entity_adoption_daily",
+    "team_adoption_daily",
+    "repository_copilot_impact_daily",
+    "feature_usage_daily",
+    "language_usage_daily",
+    "ide_usage_daily",
+    "adoption_rolling_daily",
+    "data_freshness_daily"
+  ],
+  "reportPages": [
+    {
+      "id": "ExecutiveOverview",
+      "displayName": "Executive overview",
+      "measures": [
+        "Daily Active Users",
+        "Weekly Active Users",
+        "28-Day Active Users",
+        "Acceptance Rate",
+        "LOC Acceptance Rate",
+        "Freshness Status"
+      ]
+    },
+    {
+      "id": "TeamAdoption",
+      "displayName": "Team adoption",
+      "measures": [
+        "Team Active Users",
+        "Team Adoption Rate",
+        "Team Acceptance Rate",
+        "Team Additivity Warning"
+      ]
+    },
+    {
+      "id": "DeveloperExperience",
+      "displayName": "Developer experience",
+      "measures": [
+        "Interactions per Active User",
+        "AI Credits Used",
+        "Feature Adoption Rate",
+        "Feature Acceptance Rate"
+      ]
+    },
+    {
+      "id": "RepositoryImpact",
+      "displayName": "Repository impact",
+      "measures": [
+        "Pull Requests Created",
+        "Copilot Authored PR Rate",
+        "Copilot Reviewed PR Rate",
+        "Repository Suggestion Apply Rate",
+        "Median Minutes to Merge"
+      ]
+    },
+    {
+      "id": "DataQuality",
+      "displayName": "Data quality",
+      "measures": [
+        "Freshness Status",
+        "Incomplete Report Days",
+        "Maximum Days Late",
+        "Sparse Metric Count",
+        "Non-Additive Team Rows"
+      ]
+    }
+  ],
+  "userDetailExposed": false,
+  "rlsTemplate": "templates/ScopeFilterTemplate.tmdl"
+}
