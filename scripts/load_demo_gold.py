@@ -18,11 +18,14 @@ NOTEBOOK_NAME = "load_demo_gold"
 def validate_demo_target(spark, allowed_tables):
     """Refuse existing tables unless they belong exclusively to this demo."""
     existing = set()
-    for database in spark.catalog.listDatabases():
-        for table in spark.catalog.listTables(database.name):
-            if table.isTemporary:
+    for database in spark.sql("SHOW SCHEMAS").collect():
+        schema = database[0]
+        quoted_schema = "`" + schema.replace("`", "``") + "`"
+        for table in spark.sql(f"SHOW TABLES IN {quoted_schema}").collect():
+            values = table.asDict()
+            if values["isTemporary"]:
                 raise RuntimeError("Temporary tables are not permitted in the demo")
-            existing.add((database.name, table.name))
+            existing.add((schema, values["tableName"]))
     allowed = {("gold", name) for name in allowed_tables}
     if existing - allowed:
         raise RuntimeError("Use an isolated Lakehouse without unrelated tables")

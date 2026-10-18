@@ -25,14 +25,22 @@ ARGS = [
 
 def spark_with(tables, owner=None, foreign_rows=0):
     spark = Mock()
-    spark.catalog.listDatabases.return_value = [
-        SimpleNamespace(name=name) for name in {schema for schema, _ in tables}
-    ]
-    spark.catalog.listTables.side_effect = lambda schema: [
-        SimpleNamespace(name=name, isTemporary=False)
-        for db, name in tables
-        if db == schema
-    ]
+
+    def sql(query):
+        if query == "SHOW SCHEMAS":
+            rows = [(name,) for name in {schema for schema, _ in tables}]
+        else:
+            schema = query.removeprefix("SHOW TABLES IN `").removesuffix("`")
+            rows = [
+                SimpleNamespace(
+                    asDict=lambda name=name: {"tableName": name, "isTemporary": False}
+                )
+                for db, name in tables
+                if db == schema
+            ]
+        return SimpleNamespace(collect=lambda: rows)
+
+    spark.sql.side_effect = sql
     spark.table.return_value.collect.return_value = [
         SimpleNamespace(asDict=lambda: {"demo_owner": owner})
     ]
