@@ -1,0 +1,70 @@
+# Provisional metadata, not a verified Accelerator Catalog schema.
+# The supplied catalog URL returned 404 during preparation on 2026-10-18.
+id: github-copilot-metrics-fabric
+name: GitHub Copilot Adoption Insights on Microsoft Fabric
+description: >-
+  Collect GitHub Copilot usage telemetry, process Bronze, Silver, and Gold data
+  in Microsoft Fabric, and explore aggregate adoption and freshness in Power BI
+  to prioritize an enablement action.
+repository: https://github.com/VeVarunSharma/github-copilot-metrics-fabric
+license: MIT
+status: draft
+readiness:
+  current: demo-candidate
+  target: catalog-ready
+  deployment_verified: false
+  independent_handoff_verified: false
+customer:
+  applicability: reusable-cross-industry
+  industry: cross-industry
+personas:
+  primary: developer-productivity-lead
+  supporting:
+    - platform-engineer
+    - data-engineer
+    - engineering-leader
+    - solution-engineer
+    - cloud-solution-architect
+technologies:
+  - GitHub Copilot
+  - Microsoft Fabric
+  - OneLake
+  - Power BI
+  - Azure Key Vault
+  - Python
+business_outcomes:
+  - Establish a repeatable Copilot adoption baseline
+  - Identify opportunities for targeted enablement
+  - Improve visibility into telemetry completeness
+prerequisites:
+  - GitHub Copilot reporting access and enabled metrics policy
+  - Microsoft Fabric capacity and approved workspace permissions
+  - Azure subscription and approved Key Vault permissions
+  - Python 3.10 or later
+  - Git and Azure CLI
+assets:
+  readme: README.md
+  architecture: docs/diagrams/github-copilot-metrics-architecture.svg
+  setup: docs/bootstrap-guide.md
+  deployment: docs/deployment-guide.md
+  operations: docs/architecture-operations.md
+  reporting: docs/powerbi-assets.md
+  security: SECURITY.md
+  sample_data: scripts/load_demo_gold.py
+  illustrative_preview: assets/demo/index.html
+  illustrative_evidence: assets/demo/manifest.json
+engagement:
+  motion: discovery-workshop-and-scoped-pilot
+  call_to_action: >-
+    Bring the engineering sponsor, GitHub administrator, and Fabric owner
+    together to agree on a pilot question, approved scope, and success criteria.
+limitations:
+  - Usage metrics do not establish causal productivity gains or ROI
+  - Synthetic Gold data does not validate end-to-end ingestion
+  - Standard deployment does not materialize primary-team mappings
+  - RLS and alerting require additional implementation and configuration
+  - GitHub App daily operation requires renewable runtime authentication
+submission:
+  schema_validated: false
+  maintainer_contact: null
+  evidence_url: null

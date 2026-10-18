@@ -13,6 +13,85 @@ automate Azure Key Vault setup, initial execution, and the managed daily
 schedule. Bootstrap does not create a Fabric capacity, Power BI role
 assignments, or a primary-team mapping.
 
+## Customer engagement: discovery to pilot
+
+**Call to action:** invite an executive sponsor, engineering/adoption lead,
+Fabric/BI operator, GitHub administrator, and workforce-data/security steward
+to a discovery session. No contact, staffed delivery team, or response SLA is
+assigned by this repository; agree an engagement owner and contact route.
+
+### Discovery (30 minutes)
+
+| Time | Ask / activity | Required output |
+| --- | --- | --- |
+| 0-5 | What decision must change, and who can act on it? | Sponsor, decision, review date. |
+| 5-15 | Which cohorts/workflows need enablement? What baseline and developer feedback exist? | Two or three hypotheses; no individual ranking or causal ROI claims. |
+| 15-25 | Which GitHub scope, capacity, permissions, privacy constraints, and token policy apply? | Data steward and operator; access/retention blockers and budget. |
+| 25-30 | Is a synthetic workshop sufficient, or is a live pilot justified? | Named next-step owner, date, and go/no-go conditions. |
+
+### Workshop (60 minutes)
+
+Prepare a dedicated synthetic workspace, reviewed pages, the fixed demo date
+range, and the [capture checklist](powerbi-assets.md#evidence-and-capture-checklist).
+Do not request a customer's token for the synthetic session.
+
+1. **0-10:** confirm decision, audience, privacy boundaries, and metric caveats.
+2. **10-25:** run the [15-minute script](powerbi-assets.md#15-minute-workshop-script);
+   label all synthetic content. Distinguish demo Gold from real ingestion.
+3. **25-40:** map proposed actions to signals: training cohort, feature
+   enablement, or workflow experiment. Identify competing explanations and
+   missing context rather than treating correlation as causation.
+4. **40-50:** review live architecture, source access, primary-team governance,
+   inactive RLS, rotation, catalog uncertainty, and operating responsibilities.
+5. **50-60:** document pilot scope, evidence needed, success thresholds, owner,
+   cost limit, and decision date. Choose proceed, remediate, or stop.
+
+### Time-boxed pilot (suggested two to four weeks)
+
+Use a separate approved live target; never convert the synthetic Lakehouse into
+production by overwriting it.
+
+- **Before collection:** approve purpose/retention and audiences, establish
+  baseline and hypotheses, confirm API scope and token expiry, and assign the
+  [support roles](architecture-operations.md#support-ownership-and-handoff).
+- **Week 1:** validate a bounded backfill from real Bronze manifests through
+  Silver/Gold audits to rendered report; classify missing/no-data days. Capture
+  sanitized evidence privately, with commit, dates, and reviewer.
+- **Following weeks:** observe scheduled runs and freshness, conduct an
+  enablement experiment with qualitative feedback, and test rotation/recovery.
+  Agree customer-specific thresholds up front (for example, every scheduled
+  run in an agreed observation window accounted for, with no unexplained missing
+  days outside lag). Do not substitute synthetic results for pilot acceptance.
+- **Exit review:** compare baseline and outcomes without claiming causation;
+  choose expand, iterate, or stop. If stopping, disable schedules, revoke unused
+  access, and delete data according to retention and approved cleanup scope.
+
+Deliver a sanitized decision brief, metric limitations, access/ownership matrix,
+runbook, evidence index, costs, and open risks. Customer evidence stays in an
+approved customer-controlled location, not a public PR.
+
+## Release and pilot acceptance gates
+
+All gates require an actual reviewer, date, evidence location, and explicit
+pass/fail/not-run status. An unchecked or unassigned gate blocks the associated
+readiness claim; this checklist does not assert that any gate has passed.
+
+| Gate | Evidence / acceptance | Approver to assign |
+| --- | --- | --- |
+| Repository release | Applicable existing validation/tests/lint/build results; reviewed contract and guide changes. Docs-only work needs link/command review, not a fabricated test run. | Maintainer |
+| Demo-ready | Loader dry-run and isolated ownership verification; actual successful load; all five report pages reviewed, dates/synthetic labels visible; screenshots and short video per capture checklist. | Demo presenter + BI reviewer |
+| Live collection | Approved scope/token policy; actual successful Bronze, Silver, Gold audit and lineage; source/no-data reconciliation, retry/backfill verification. | GitHub admin + Fabric operator |
+| Governance | Workforce-data approval, retention/access reviews; governed mapping or documented non-additive limitation; tested RLS for restricted audiences. | Data/security steward |
+| Runtime/report | Reviewed Desktop/service rendering, refresh, bindings, measures, capacity limits; observed scheduled runs and token rotation/recovery. | BI + platform operators |
+| Catalog publication | Obtain accessible current catalog schema, validate metadata against it, and verify ingestion/publication. Current catalog URL returns GitHub 404; schema remains unverified and this gate is blocked. | Catalog/release owner |
+| Handoff | Named support contacts, escalation route, agreed SLO/costs, access transfer, runbook rehearsal and rollback/cleanup approval. | Customer service owner + sponsor |
+
+No live credentials were available for the documentation update. No live run,
+actual Power BI screenshot, walkthrough video, catalog validation, RLS
+deployment, or customer sign-off is implied. Local illustrative HTML mockup
+captures are not execution evidence. Local tests cannot close service/runtime
+gates.
+
 ## Prerequisites and permissions
 
 - GitHub Copilot Business or Enterprise with usage metrics enabled by policy.

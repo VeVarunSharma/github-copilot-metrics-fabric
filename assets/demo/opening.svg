@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">Where should we focus our next Copilot enablement investment?</title>
+  <desc id="description">Opening slide for a cross-industry discovery workshop. Synthetic demonstration, not customer evidence.</desc>
+  <rect width="1600" height="900" fill="#0b1220"/>
+  <rect x="100" y="140" width="9" height="570" rx="4" fill="#65dec6"/>
+  <g font-family="sans-serif">
+    <text x="155" y="200" fill="#65dec6" font-size="25" letter-spacing="3">COPILOT ADOPTION INSIGHTS / MICROSOFT FABRIC</text>
+    <text x="155" y="330" fill="#edf4ff" font-size="64" font-weight="700">Where should we focus</text>
+    <text x="155" y="415" fill="#edf4ff" font-size="64" font-weight="700">our next Copilot</text>
+    <text x="155" y="500" fill="#edf4ff" font-size="64" font-weight="700">enablement investment?</text>
+    <text x="155" y="600" fill="#b8c8df" font-size="30">Trusted baseline → Relevant context → One useful next action</text>
+    <text x="155" y="690" fill="#ffe1ac" font-size="23">Synthetic demonstration · Not customer evidence or a claim of ROI</text>
+    <text x="155" y="810" fill="#b8c8df" font-size="22">Bring the engineering sponsor, GitHub administrator, and Fabric owner.</text>
+  </g>
+</svg>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Copilot Adoption Insights · Illustrative demo</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #0b1220; color: #edf4ff; }
+    * { box-sizing: border-box; }
+    body { max-width: 1280px; margin: auto; padding: 32px; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: center; }
+    .eyebrow { color: #65dec6; font-size: 13px; font-weight: 700; letter-spacing: 2px; }
+    h1 { font-size: 32px; margin: 10px 0; } h2 { font-size: 25px; }
+    p { color: #b8c8df; line-height: 1.6; }
+    .badge { padding: 10px 14px; background: #163e38; color: #9af4dc; border-radius: 20px; white-space: nowrap; }
+    .notice { margin: 24px 0; padding: 14px 18px; border: 1px solid #9a7440; background: #30271c; color: #ffe1ac; border-radius: 10px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #324258; padding-bottom: 20px; }
+    button { font: inherit; border: 1px solid #3d5271; background: #142238; color: #e6efff; padding: 11px 16px; border-radius: 8px; cursor: pointer; }
+    button[aria-pressed="true"] { background: #65dec6; color: #08251f; border-color: #65dec6; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #ffce75; outline-offset: 4px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card, .panel { background: #142136; border: 1px solid #30425c; border-radius: 12px; padding: 20px; }
+    .card span { color: #b8c8df; } .card strong { display: block; font-size: 36px; margin: 8px 0; }
+    .card small { color: #80e4cf; } .panel { margin-top: 18px; }
+    .bars { display: flex; height: 150px; gap: 14px; align-items: end; border-bottom: 1px solid #71829b; padding: 0 12px; }
+    .bars i { flex: 1; background: linear-gradient(#77ecd0, #2879a5); border-radius: 6px 6px 0 0; }
+    .axis { display: flex; justify-content: space-between; font-size: 13px; color: #b8c8df; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 13px 9px; border-bottom: 1px solid #30425c; }
+    th { color: #92a9ca; font-size: 13px; }
+    .action { border-left: 4px solid #65dec6; }
+    .action h3 { margin-top: 0; }
+    footer { font-size: 12px; margin-top: 22px; color: #a7bad4; }
+    a { color: #8fead6; }
+    [hidden] { display: none !important; }
+    @media (max-width: 700px) { body { padding: 18px; } header { display: block; } .badge { display: inline-block; } .grid { grid-template-columns: 1fr; } h1 { font-size: 26px; } .panel { overflow-x: auto; } }
+    @media print { button { display: none; } body { max-width: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div><div class="eyebrow">GITHUB COPILOT × MICROSOFT FABRIC</div><h1>Adoption insights. Useful next actions.</h1><p>Where should we focus our next Copilot enablement investment?</p></div>
+    <span class="badge">Reusable · Cross-industry</span>
+  </header>
+  <div class="notice"><strong>Synthetic demonstration data · Illustrative mockup</strong><br>Not a Power BI rendering, customer result, or live pipeline. Fixed example period: September 2026.</div>
+  <nav aria-label="Demo pages">
+    <button type="button" data-page="executive" aria-controls="executive" aria-pressed="true">Executive overview</button>
+    <button type="button" data-page="teams" aria-controls="teams" aria-pressed="false">Team adoption</button>
+    <button type="button" data-page="experience" aria-controls="experience" aria-pressed="false">Developer experience</button>
+    <button type="button" data-page="repositories" aria-controls="repositories" aria-pressed="false">Repository impact</button>
+    <button type="button" data-page="quality" aria-controls="quality" aria-pressed="false">Data quality</button>
+  </nav>
+  <main>
+    <section id="executive" aria-labelledby="executive-title">
+      <h2 id="executive-title">Start with the decision, not the dashboard.</h2>
+      <div class="grid">
+        <div class="card"><span>Daily active users · Sep 30</span><strong>218</strong><small>Observed users: 300 · not licensed seats</small></div>
+        <div class="card"><span>28-day distinct active users</span><strong>274</strong><small>Illustrative distinct-window count</small></div>
+        <div class="card"><span>Code acceptance · Sep 30</span><strong>40%</strong><small>800 acceptances / 2,000 generations</small></div>
+      </div>
+      <div class="panel"><h3>Daily active users · selected example days</h3><div class="bars" role="img" aria-label="Illustrative daily users: 152, 164, 175, 189, 203, 218"><i style="height:61%"></i><i style="height:66%"></i><i style="height:70%"></i><i style="height:76%"></i><i style="height:81%"></i><i style="height:87%"></i></div><div class="axis"><span>Sep 1 · 152 users</span><span>Sep 30 · 218 users</span></div></div>
+      <div class="panel action"><h3>Next action → Select an enablement hypothesis</h3><p>Review feature usage with a platform lead. Agree on one scenario-based workshop, its owner, and a follow-up measurement window. Usage is not proof of productivity or ROI.</p></div>
+    </section>
+    <section id="teams" aria-labelledby="teams-title" hidden>
+      <h2 id="teams-title">Target support, not individual rankings.</h2>
+      <div class="panel"><table><caption>Synthetic primary-team allocation · Sep 30</caption><thead><tr><th scope="col">Team</th><th scope="col">Observed users</th><th scope="col">Active users</th><th scope="col">Hypothesis to investigate</th></tr></thead><tbody><tr><td>Platform engineering</td><td>80</td><td>62</td><td>Share established workflows</td></tr><tr><td>Application engineering</td><td>100</td><td>79</td><td>Explore agent scenarios</td></tr><tr><td>Data and AI</td><td>70</td><td>48</td><td>Try data-engineering examples</td></tr><tr><td>Security engineering</td><td>50</td><td>29</td><td>Discover barriers first</td></tr></tbody></table></div>
+      <div class="notice">These disjoint example teams sum to 218 active users. Standard deployment has no primary-team mapping: executive team measures may be blank. All-membership rows overlap and must not be summed. Do not infer privacy-suppressed teams.</div>
+      <div class="panel action"><h3>Next action → Confirm the grouping</h3><p>Ask the customer to approve team definitions and allocation ownership before comparing teams. Do not use this report for individual performance assessment.</p></div>
+    </section>
+    <section id="experience" aria-labelledby="experience-title" hidden>
+      <h2 id="experience-title">Make enablement relevant to real workflows.</h2>
+      <div class="grid"><div class="card"><span>Completion users · Sep 30</span><strong>170</strong><small>Example feature-active users</small></div><div class="card"><span>Chat users · Sep 30</span><strong>130</strong><small>Users can use multiple features</small></div><div class="card"><span>Agent users · Sep 30</span><strong>62</strong><small>Do not sum feature users</small></div></div>
+      <div class="panel"><h3>Discovery prompts</h3><p>Which tasks are developers trying to complete? Which IDEs and languages matter? Does lower use reflect lack of awareness, policy, task suitability, or telemetry coverage?</p></div>
+      <div class="panel action"><h3>Next action → Run a scenario-based workshop</h3><p>Pick an approved coding scenario. Collect qualitative feedback and review aggregate adoption after the agreed window, without promising a productivity uplift.</p></div>
+    </section>
+    <section id="repositories" aria-labelledby="repositories-title" hidden>
+      <h2 id="repositories-title">Explore repository trends with context.</h2>
+      <div class="panel"><table><caption>Illustrative repository activity · Sep 30</caption><thead><tr><th scope="col">Repository</th><th scope="col">PRs created</th><th scope="col">Copilot-authored PRs</th><th scope="col">Authored share</th></tr></thead><tbody><tr><td>sample-commerce-api</td><td>20</td><td>5</td><td>25%</td></tr><tr><td>sample-portal</td><td>12</td><td>3</td><td>25%</td></tr><tr><td>sample-data-platform</td><td>8</td><td>1</td><td>12.5%</td></tr></tbody></table></div>
+      <div class="notice">Repository telemetry describes observed activity, not causal delivery improvement. Ratios use summed numerators and denominators; a median of repository-day medians is not an event-level median.</div>
+      <div class="panel action"><h3>Next action → Validate the interpretation</h3><p>Review release cycles, repository purpose, policy changes, and qualitative feedback with the repository owner before selecting an intervention.</p></div>
+    </section>
+    <section id="quality" aria-labelledby="quality-title" hidden>
+      <h2 id="quality-title">Establish trust before interpreting trends.</h2>
+      <div class="grid"><div class="card"><span>Illustrative complete report days</span><strong>28</strong><small>Selected 30-day example period</small></div><div class="card"><span>Expected lag</span><strong>1 day</strong><small>Within the configured lag window</small></div><div class="card"><span>Missing outside lag</span><strong>1 day</strong><small>Investigate before comparing trends</small></div></div>
+      <div class="panel"><h3>Operational journey · conceptual, not execution evidence</h3><p>GitHub reports → Bronze manifests → Silver validation → Gold freshness → Power BI</p><p>Check pipeline status and audit records, distinguish 204 no-data responses from failures, inspect quarantine and drift, then backfill the approved affected range.</p></div>
+      <div class="panel action"><h3>Next action → Assign the recovery owner</h3><p>Record the missing day, owner, and recovery decision. A synthetic Gold load does not prove API access, scheduling, ingestion, or recovery works.</p></div>
+    </section>
+  </main>
+  <footer>Static illustrative preview · Captured 2026-10-18 · No credentials, customer data, or persistence. Values are handcrafted examples, not outputs of the synthetic loader. <a href="opening.svg">Opening slide</a> · <a href="manifest.json">Evidence manifest</a></footer>
+  <script>
+    const initialPage = location.hash.slice(1);
+    const initialButton = Array.from(document.querySelectorAll('button[data-page]'))
+      .find(button => button.dataset.page === initialPage);
+    document.querySelectorAll('button[data-page]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('main section').forEach(section => {
+          section.hidden = section.id !== button.dataset.page;
+        });
+        document.querySelectorAll('button[data-page]').forEach(item => {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+      });
+      if (initialButton) initialButton.click();
+    });
+  </script>
+</body>
+</html>
