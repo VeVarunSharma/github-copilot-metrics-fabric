@@ -1,8 +1,73 @@
 # One-command setup
 
-This is the recommended setup path for a fork of this repository. It supports
+This is the recommended **live-data** setup path for a fork of this repository. It supports
 Windows, macOS, and Linux and creates or reuses the required Azure and
 Microsoft Fabric resources.
+
+## Isolated synthetic demo (no GitHub token)
+
+Use this path for a sales walkthrough or workshop before requesting workforce
+data access. It still requires Fabric authentication, capacity, and permission
+to access the target; it is not an offline demo or a free-capacity promise.
+
+1. Use a dedicated demo workspace and a schema-enabled Lakehouse, separate from
+   every live deployment. Start empty, or reuse only a target containing
+   demo-owned known Gold tables and demo metadata. Never target live tables.
+2. Install the project using the [deployment guide](deployment-guide.md#fork-and-install)
+   and authenticate to Azure/Fabric. Record the actual workspace/lakehouse UUIDs
+   and exact Lakehouse name privately.
+3. Preview the loader from the repository root, substituting the placeholders:
+
+   ```bash
+   python scripts/load_demo_gold.py --workspace-id UUID --lakehouse-id UUID --lakehouse-name NAME
+   ```
+
+   Offline planning is the default: it prints the supplied target and dates,
+   without authentication, discovery, or writes. Inspect isolation separately;
+   actual ownership/table checks run inside the notebook before table writes.
+4. Only after confirming isolation, apply:
+
+   ```bash
+   python scripts/load_demo_gold.py --workspace-id UUID --lakehouse-id UUID --lakehouse-name NAME --confirm-isolated-demo --yes
+   ```
+
+   Both `--confirm-isolated-demo` and `--yes` are required to apply. A flag is
+   not a substitute for inspecting the actual target. The loader must refuse
+   unknown/live tables or missing/conflicting ownership on an existing target;
+   do not defeat that refusal by deleting ownership metadata.
+   Existing targets require the exact demo ownership marker, only approved
+   Gold tables, and only `synthetic-demo` scope in metric rows. Temporary tables
+   are refused. A partial failure without the marker requires a fresh dedicated
+   Lakehouse or manual inspection; do not blindly retry against uncertain data.
+   No concurrent writers are allowed during planning/application.
+5. The default inclusive dates are **2026-07-09 through 2026-10-06**, not a
+   moving "last 90 days." Optional `--start-date YYYY-MM-DD --end-date YYYY-MM-DD`
+   overrides must be recorded with evidence. Scope is `synthetic-demo`, with a
+   metadata ownership marker identifying demo-managed content.
+   Date windows are limited to 366 days within the model calendar, 2020-2035.
+6. Bind/publish the starter model and report using the
+   [Power BI guide](powerbi-assets.md), ensuring they reference the demo
+   Lakehouse rather than a live model. Select the fixed date range explicitly.
+   Inspect all pages before presenting; a successful load is not visual proof.
+
+This loader writes synthetic **Gold only**, bypassing Bronze and Silver.
+Do not run live bootstrap/backfill or schedules against this demo Lakehouse.
+Do not describe demo freshness rows as proof of a live ingestion SLA, or demo
+team allocations as evidence that production mapping is configured.
+Use the [timed scripts and capture checklist](powerbi-assets.md#demo-scripts);
+if Fabric is unavailable, explain the source assets without claiming a rendered
+Power BI demo. The [local illustrative HTML mockup](../assets/demo/index.html)
+can support the story without Fabric; its screenshots are not execution proof.
+No live end-to-end evidence is supplied by this guide.
+
+## Live-path readiness checkpoint
+
+Before running setup, identify a sponsor, GitHub metrics administrator, Fabric
+operator, secret-rotation owner, and workforce-data approver. Record approved
+scope, retention, budget, audience, and pilot exit criteria. These roles are
+**unassigned by this repository**. Bootstrap creates resources; it does not
+approve data use, activate RLS, or provide a governed primary-team mapping.
+See [release gates](deployment-guide.md#release-and-pilot-acceptance-gates).
 
 ## Prerequisites
 
@@ -66,8 +131,13 @@ by Git.
 The current bootstrap prompt expects an access token. Generate a short-lived
 installation token from these values, then paste that token at the hidden
 prompt. GitHub App installation tokens expire after one hour, so this flow is
-appropriate for the initial POC load. A durable daily schedule requires the
-Bronze notebook to mint a fresh token from a Key Vault-stored private key.
+appropriate only for a time-bounded initial POC load. The deployed Bronze
+notebook reads an access token from Key Vault; it does **not** mint or renew
+GitHub App installation tokens. A durable schedule needs an approved token
+lifetime/rotation process, or a separately implemented and validated renewable
+App runtime. Merely storing a private key in Key Vault does not implement it.
+See the [token rotation runbook](architecture-operations.md#key-vault-token-rotation-runbook)
+before enabling a daily schedule.
 
 ## What setup does
 

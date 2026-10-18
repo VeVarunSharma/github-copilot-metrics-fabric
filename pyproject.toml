@@ -42,7 +42,7 @@ dev = [
 ghcp-metrics = "copilot_metrics_fabric.cli:main"
 
 [project.urls]
-Repository = "https://github.com/"
+Repository = "https://github.com/VeVarunSharma/github-copilot-metrics-fabric"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/copilot_metrics_fabric"]

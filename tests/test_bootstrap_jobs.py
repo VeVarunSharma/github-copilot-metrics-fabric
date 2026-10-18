@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -404,7 +404,7 @@ def test_plan_is_read_only_and_reports_schedule_create(tmp_path: Path) -> None:
         config(),
         root=tmp_path,
         client=client(router),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
     )
 
     actions = bootstrap.plan()
@@ -420,7 +420,7 @@ def test_schedule_payload_uses_validated_fabric_timezone(tmp_path: Path) -> None
         config(wait=False),
         root=tmp_path,
         client=client(router),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
     ).apply()
 
     schedule_call = next(
@@ -441,7 +441,7 @@ def test_fresh_runner_uses_remote_backfill_completion_without_duplicate(
         config(wait=False),
         root=tmp_path,
         client=client(router),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
     ).apply()
 
     assert result.jobs == {"organization:example-org": "job-42"}
@@ -461,7 +461,7 @@ def test_fresh_runner_uses_remote_backfill_completion_without_duplicate(
         config(wait=False),
         root=tmp_path,
         client=client(second_router),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
         completion_store=completion_store,
     ).apply()
 
@@ -646,7 +646,7 @@ def test_schedule_create_preserves_unrelated_schedule(tmp_path: Path) -> None:
         schedule_config(),
         root=tmp_path,
         client=client(router),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
     ).apply()
 
     assert result.actions[0].operation == "create"
@@ -683,7 +683,7 @@ def test_fresh_runner_discovers_schedule_and_updates_it(tmp_path: Path) -> None:
         schedule_config(),
         root=tmp_path,
         client=client(JobsRouter()),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
     )
     desired = bootstrap._schedule_body(
         JobScope("organization", "example-org"), None
@@ -714,7 +714,7 @@ def test_schedule_ambiguity_fails_without_writes(tmp_path: Path) -> None:
         schedule_config(),
         root=tmp_path,
         client=client(JobsRouter()),
-        now=lambda: datetime(2026, 10, 3, tzinfo=UTC),
+        now=lambda: datetime(2026, 10, 3, tzinfo=timezone.utc),
     )
     desired = bootstrap._schedule_body(
         JobScope("organization", "example-org"), None

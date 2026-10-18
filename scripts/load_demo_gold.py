@@ -2,20 +2,71 @@
 
 from __future__ import annotations
 
+import argparse
 import base64
+import inspect
 import json
+from datetime import date
 from typing import Any
+from uuid import UUID
 
 from copilot_metrics_fabric.deployment import FabricClient
 
-WORKSPACE_ID = "5fd86aef-ea0c-4916-9816-19a3098fadb3"
-LAKEHOUSE_ID = "f5112f44-505e-4229-8491-b3018117069a"
-LAKEHOUSE_NAME = "GitHubCopilotMetrics"
 NOTEBOOK_NAME = "load_demo_gold"
 
 
-def notebook_code() -> str:
-    return r'''
+def validate_demo_target(spark, allowed_tables):
+    """Refuse existing tables unless they belong exclusively to this demo."""
+    existing = set()
+    for database in spark.sql("SHOW SCHEMAS").collect():
+        schema = database[0]
+        quoted_schema = "`" + schema.replace("`", "``") + "`"
+        for table in spark.sql(f"SHOW TABLES IN {quoted_schema}").collect():
+            values = table.asDict()
+            if values["isTemporary"]:
+                raise RuntimeError("Temporary tables are not permitted in the demo")
+            existing.add((schema, values["tableName"]))
+    allowed = {("gold", name) for name in allowed_tables}
+    if existing - allowed:
+        raise RuntimeError("Use an isolated Lakehouse without unrelated tables")
+    if not existing:
+        return
+    if ("gold", "demo_metadata") not in existing:
+        raise RuntimeError("Existing tables have no demo ownership marker")
+    markers = spark.table("gold.demo_metadata").collect()
+    if len(markers) != 1 or markers[0].asDict().get("demo_owner") != (
+        "github-copilot-metrics-fabric/synthetic-demo/v1"
+    ):
+        raise RuntimeError("Existing tables are not owned by this synthetic demo")
+    for schema, name in existing:
+        if name in {"demo_metadata", "date_dimension"}:
+            continue
+        if (
+            spark.table(f"{schema}.{name}")
+            .where("scope_slug IS NULL OR scope_slug <> 'synthetic-demo'")
+            .limit(1)
+            .count()
+        ):
+            raise RuntimeError("Non-demo scope detected; refusing to overwrite")
+
+
+def notebook_code(
+    start_date: date = date(2026, 7, 9),
+    end_date: date = date(2026, 10, 6),
+) -> str:
+    if not date(2020, 1, 1) <= start_date <= end_date <= date(2035, 12, 31):
+        raise ValueError("Dates must be ordered within the report calendar 2020-2035")
+    if (end_date - start_date).days >= 366:
+        raise ValueError("Demo windows must not exceed 366 days")
+    prelude = (
+        inspect.getsource(validate_demo_target)
+        + f"\nstart_day = date.fromisoformat({start_date.isoformat()!r})\n"
+        + f"end_day = date.fromisoformat({end_date.isoformat()!r})\n"
+    )
+    return (
+        "from datetime import date\n"
+        + prelude
+        + r'''
 import math
 import random
 from datetime import date, datetime, timedelta, timezone
@@ -25,9 +76,7 @@ from copilot_metrics_fabric.gold_spark import create_dataframes
 
 random.seed(42)
 scope_kind = "enterprise"
-scope_slug = "avocado-corp"
-start_day = date(2026, 7, 9)
-end_day = date(2026, 10, 6)
+scope_slug = "synthetic-demo"
 built_at = datetime.now(timezone.utc).isoformat()
 
 spark.conf.set("spark.sql.parquet.vorder.default", "true")
@@ -230,7 +279,7 @@ for index in range(days):
             {
                 **base(day),
                 "repo_id": repo_id,
-                "repo_owner_name": "avocado-corp",
+                "repo_owner_name": "synthetic-demo",
                 "repo_name": repo_name,
                 "repo_visibility": visibility,
                 "pull_requests_created": created,
@@ -254,7 +303,7 @@ for index in range(days):
                 **base(day),
                 "dimension_type": "enterprise",
                 "dimension_id": scope_slug,
-                "dimension_name": "Avocado Corp",
+                "dimension_name": "Synthetic demonstration",
                 "window_days": window_days,
                 "distinct_active_users": min(observed, int(active * multiplier)),
                 "allocation_method": "entity",
@@ -303,6 +352,7 @@ for user_id in range(1, 301):
     )
 
 frames = create_dataframes(spark, batch.finalize())
+validate_demo_target(spark, set(frames) | {"date_dimension", "demo_metadata"})
 spark.sql("CREATE SCHEMA IF NOT EXISTS `gold`")
 for name, frame in frames.items():
     frame.write.format("delta").mode("overwrite").option(
@@ -346,37 +396,96 @@ CREATE OR REPLACE TABLE gold.demo_metadata
 USING DELTA
 AS SELECT
   'synthetic' AS data_classification,
-  'Avocado Corp GHCP dashboard POC' AS description,
+  'Synthetic demonstration data - not customer evidence' AS description,
+  'github-copilot-metrics-fabric/synthetic-demo/v1' AS demo_owner,
   current_timestamp() AS loaded_at
 """)
 print("Synthetic Gold demo data loaded successfully.")
 '''
+    )
 
 
-def list_items(client: FabricClient, item_type: str) -> list[dict[str, Any]]:
+def list_items(
+    client: FabricClient, workspace_id: str, item_type: str
+) -> list[dict[str, Any]]:
     payload = client.request(
         "GET",
-        f"workspaces/{WORKSPACE_ID}/items?type={item_type}",
+        f"workspaces/{workspace_id}/items?type={item_type}",
         expected=(200,),
     )
+    if payload.get("continuationToken") or payload.get("continuationUri"):
+        raise RuntimeError(
+            "Cannot safely discover demo notebook on a paginated listing"
+        )
     return payload.get("value", [])
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--workspace-id", type=UUID, required=True)
+    parser.add_argument("--lakehouse-id", type=UUID, required=True)
+    parser.add_argument("--lakehouse-name", required=True)
+    parser.add_argument(
+        "--start-date", type=date.fromisoformat, default=date(2026, 7, 9)
+    )
+    parser.add_argument(
+        "--end-date", type=date.fromisoformat, default=date(2026, 10, 6)
+    )
+    parser.add_argument("--confirm-isolated-demo", action="store_true")
+    parser.add_argument(
+        "--yes", action="store_true", help="Apply; otherwise plan offline"
+    )
+    args = parser.parse_args(argv)
+    try:
+        code = notebook_code(args.start_date, args.end_date)
+    except ValueError as exc:
+        parser.error(str(exc))
+    workspace_id = str(args.workspace_id)
+    lakehouse_id = str(args.lakehouse_id)
+    lakehouse_name = args.lakehouse_name
+    print(
+        "SYNTHETIC DEMONSTRATION DATA: bypasses Bronze/Silver; replaces demo Gold "
+        f"tables only. Target: {workspace_id}/{lakehouse_id} ({lakehouse_name}). "
+        f"Dates: {args.start_date} through {args.end_date}. "
+        "Use a dedicated Lakehouse with no live ingestion or concurrent writers."
+    )
+    if not args.yes:
+        print("Plan only: no authentication, network requests, or writes performed.")
+        return 0
+    if not args.confirm_isolated_demo:
+        parser.error("--yes requires --confirm-isolated-demo")
     client = FabricClient(poll_interval=15, max_lro_polls=240)
+    target = client.request(
+        "GET", f"workspaces/{workspace_id}/lakehouses/{lakehouse_id}", expected=(200,)
+    )
+    if target.get("displayName") != lakehouse_name:
+        raise RuntimeError("Lakehouse name does not match the selected target")
     matches = [
         item
-        for item in list_items(client, "Notebook")
+        for item in list_items(client, workspace_id, "Notebook")
         if item.get("displayName") == NOTEBOOK_NAME
     ]
     if len(matches) > 1:
         raise RuntimeError("Multiple load_demo_gold notebooks exist")
     if matches:
         notebook_id = matches[0]["id"]
+        recent = client.request(
+            "GET",
+            f"workspaces/{workspace_id}/items/{notebook_id}/jobs/instances",
+            expected=(200,),
+        )
+        if recent.get("continuationToken") or recent.get("continuationUri"):
+            raise RuntimeError("Cannot safely inspect paginated notebook jobs")
+        if any(
+            str(job.get("status", "")).lower()
+            not in {"completed", "failed", "cancelled", "deduped"}
+            for job in recent.get("value", [])
+        ):
+            raise RuntimeError("Demo notebook has an active or unknown job state")
     else:
         created = client.request(
             "POST",
-            f"workspaces/{WORKSPACE_ID}/items",
+            f"workspaces/{workspace_id}/items",
             body={"displayName": NOTEBOOK_NAME, "type": "Notebook"},
             expected=(201, 202),
         )
@@ -384,9 +493,11 @@ def main() -> int:
         if not notebook_id:
             matches = [
                 item
-                for item in list_items(client, "Notebook")
+                for item in list_items(client, workspace_id, "Notebook")
                 if item.get("displayName") == NOTEBOOK_NAME
             ]
+            if len(matches) != 1:
+                raise RuntimeError("Could not uniquely resolve created demo notebook")
             notebook_id = matches[0]["id"]
 
     notebook = {
@@ -401,10 +512,10 @@ def main() -> int:
             "language_info": {"name": "python"},
             "dependencies": {
                 "lakehouse": {
-                    "default_lakehouse": LAKEHOUSE_ID,
-                    "default_lakehouse_name": LAKEHOUSE_NAME,
-                    "default_lakehouse_workspace_id": WORKSPACE_ID,
-                    "known_lakehouses": [{"id": LAKEHOUSE_ID}],
+                    "default_lakehouse": lakehouse_id,
+                    "default_lakehouse_name": lakehouse_name,
+                    "default_lakehouse_workspace_id": workspace_id,
+                    "known_lakehouses": [{"id": lakehouse_id}],
                 }
             },
         },
@@ -413,9 +524,10 @@ def main() -> int:
                 "cell_type": "markdown",
                 "metadata": {},
                 "source": [
-                    "# Synthetic Avocado GHCP Gold data\n",
+                    "# Synthetic demonstration data - not customer evidence\n",
                     "\n",
-                    "Creates deterministic demo-only Gold Delta tables.\n",
+                    "Replaces only owned demo Gold tables in an isolated Lakehouse.\n",
+                    "Primary-team rows are synthetic; live mapping is not deployed.\n",
                 ],
             },
             {
@@ -423,22 +535,14 @@ def main() -> int:
                 "metadata": {},
                 "execution_count": None,
                 "outputs": [],
-                "source": [
-                    line + "\n"
-                    for line in notebook_code().strip().splitlines()
-                ],
+                "source": [line + "\n" for line in code.strip().splitlines()],
             },
         ],
     }
-    payload = base64.b64encode(
-        json.dumps(notebook).encode("utf-8")
-    ).decode("ascii")
+    payload = base64.b64encode(json.dumps(notebook).encode("utf-8")).decode("ascii")
     client.request(
         "POST",
-        (
-            f"workspaces/{WORKSPACE_ID}/items/{notebook_id}/"
-            "updateDefinition"
-        ),
+        (f"workspaces/{workspace_id}/items/{notebook_id}/updateDefinition"),
         body={
             "definition": {
                 "format": "ipynb",
@@ -454,38 +558,19 @@ def main() -> int:
         expected=(200, 202),
     )
 
-    recent = client.request(
-        "GET",
-        (
-            f"workspaces/{WORKSPACE_ID}/items/{notebook_id}/"
-            "jobs/instances?jobType=RunNotebook"
-        ),
-        expected=(200,),
-    )
-    active = [
-        job
-        for job in recent.get("value", [])
-        if str(job.get("status", "")).lower()
-        in {"notstarted", "inprogress", "running"}
-    ]
-    if active:
-        raise RuntimeError(
-            f"Demo notebook already has active job {active[0].get('id')}"
-        )
-
     response = client.request_response(
         "POST",
         (
-            f"workspaces/{WORKSPACE_ID}/items/{notebook_id}/"
+            f"workspaces/{workspace_id}/items/{notebook_id}/"
             "jobs/instances?jobType=RunNotebook"
         ),
         body={
             "executionData": {
                 "configuration": {
                     "defaultLakehouse": {
-                        "id": LAKEHOUSE_ID,
-                        "name": LAKEHOUSE_NAME,
-                        "workspaceId": WORKSPACE_ID,
+                        "id": lakehouse_id,
+                        "name": lakehouse_name,
+                        "workspaceId": workspace_id,
                     }
                 }
             }
@@ -496,7 +581,7 @@ def main() -> int:
     if not location:
         raise RuntimeError("Notebook run returned no Location header")
     result = client.wait_for_job(location, initial_response=response)
-    print(json.dumps(result, indent=2, default=str))
+    print(f"Demo job status: {result.get('status', 'unknown')}")
     return 0
 
 

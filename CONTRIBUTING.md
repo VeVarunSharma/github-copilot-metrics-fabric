@@ -22,6 +22,31 @@ repository root. Contract changes require the corresponding Silver or Gold
 dictionary and affected TMDL/report assets to be updated. Notebook or pipeline
 changes require the deployment and operations guides to be reviewed.
 
+## Readiness and evidence standards
+
+- Separate **implemented assets**, **locally validated behavior**, **synthetic
+  demo**, and **live verified deployment** in every change description. Record
+  commands actually run and skipped/blocked checks; never manufacture evidence.
+- Documentation-only changes require local link, command, and consistency
+  review, not code tests unless the documentation has dedicated tests. For
+  code changes, use the smallest applicable existing validation/tests/lint/build
+  commands; do not add tooling solely to validate prose.
+- Synthetic loader output is Gold-only with scope `synthetic-demo` and demo
+  ownership metadata. It bypasses Bronze/Silver and cannot prove end-to-end
+  ingestion, live freshness, or production governance.
+- Follow the [demo scripts and capture checklist](docs/powerbi-assets.md#demo-scripts).
+  Screenshots/video must be actually captured, reviewed, synthetic-labeled or
+  explicitly authorized, and sanitized. Do not reinstate unverified remote
+  screenshots. See [reuse/anonymization](docs/powerbi-assets.md#reuse-and-anonymization).
+- Keep absent capabilities visible: standard notebook primary-team mapping is
+  absent, RLS is inactive, and renewable GitHub App runtime is not implemented.
+  The current catalog URL returns GitHub 404, so catalog schema conformance is
+  unverified; do not infer it from a locally valid metadata file.
+- Use the [release gates](docs/deployment-guide.md#release-and-pilot-acceptance-gates)
+  and [handoff responsibilities](docs/architecture-operations.md#support-ownership-and-handoff).
+  Assign real reviewers/owners before claiming demo, pilot, or operational
+  readiness. Repository contributors are not automatically a support team.
+
 Integration tests require explicit opt-in and real credentials; never include
 their output or collected data in a pull request. Use synthetic fixtures.
 

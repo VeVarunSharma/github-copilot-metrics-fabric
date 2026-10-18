@@ -1,0 +1,30 @@
+{
+  "classification": "synthetic-illustrative-mockup",
+  "capture_date": "2026-10-18",
+  "source": "index.html",
+  "browser": "Chromium 155.0.8059.0 headless",
+  "viewport": {"width": 1280, "height": 1100},
+  "data_period": "2026-09-01/2026-09-30",
+  "data_origin": "Handcrafted examples; not outputs of the Gold loader",
+  "screenshots": [
+    {"file": "executive.png", "page": "#executive"},
+    {"file": "teams.png", "page": "#teams"},
+    {"file": "experience.png", "page": "#experience"},
+    {"file": "repositories.png", "page": "#repositories"},
+    {"file": "quality.png", "page": "#quality"}
+  ],
+  "opening_slide": "opening.svg",
+  "evidence": {
+    "local_mockup_captures": "captured",
+    "actual_powerbi_render": "not-run",
+    "live_ingestion_and_schedule": "not-run",
+    "walkthrough_video": "not-recorded",
+    "independent_presenter_handoff": "not-run",
+    "catalog_schema": "unverified; supplied catalog URL returned 404"
+  },
+  "limitations": [
+    "These images do not prove Power BI behavior, Fabric execution, or customer outcomes",
+    "The mockup supports page navigation only; no working filters or data integration",
+    "No live customer data, resource identifiers, or credentials are included"
+  ]
+}

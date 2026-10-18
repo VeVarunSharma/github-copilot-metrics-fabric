@@ -6,7 +6,7 @@ import hashlib
 import json
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -211,7 +211,7 @@ class FabricJobBootstrap:
         *,
         root: Path,
         client: FabricClient,
-        now: Callable[[], datetime] = lambda: datetime.now(UTC),
+        now: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
         state_root: Path | None = None,
         completion_store: BackfillCompletionStore | None = None,
     ) -> None:
@@ -449,7 +449,7 @@ class FabricJobBootstrap:
         end = current_configuration.get("endDateTime")
         if not start:
             start = (
-                self.now().astimezone(UTC) + timedelta(days=1)
+                self.now().astimezone(timezone.utc) + timedelta(days=1)
             ).strftime("%Y-%m-%dT00:00:00Z")
         if not end:
             end = "2099-12-31T23:59:59Z"
@@ -647,7 +647,7 @@ class FabricJobBootstrap:
         record: dict[str, Any] = {
             "signature": signature,
             "status": status,
-            "updated_at": self.now().astimezone(UTC).isoformat(),
+            "updated_at": self.now().astimezone(timezone.utc).isoformat(),
         }
         if job_id:
             record["job_id"] = job_id

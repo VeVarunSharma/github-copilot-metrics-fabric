@@ -1,22 +1,86 @@
-# GitHub Copilot Metrics for Microsoft Fabric
+```text
+ +------------------------------------------------------------+
+ |  GitHub Copilot  >>>  Microsoft Fabric  >>>  Better decisions |
+ |       ADOPTION          TRUSTED DATA          NEXT ACTION     |
+ +------------------------------------------------------------+
+```
 
-An open-source, forkable starter for collecting GitHub Copilot usage metrics and
-building an analytics solution in Microsoft Fabric.
+# GitHub Copilot Adoption Insights on Microsoft Fabric
 
-> [!IMPORTANT]
-> This repository provides reusable Bronze, Silver, and Gold contracts,
-> deployable Fabric notebook and pipeline definitions, Power BI project
-> assets, and an idempotent deployment CLI.
+**Turn Copilot usage signals into a conversation about adoption, enablement,
+and investment.** A sponsor asks, "Where should we focus next?" An engineering
+lead needs adoption patterns, not a developer leaderboard. A platform team needs
+traceable data and clear operational ownership. This forkable starter brings
+those conversations together in Fabric and Power BI.
 
-# Live Deployment View
+| Who it helps | Question to explore | Intended outcome |
+| --- | --- | --- |
+| Executive sponsor / adoption lead | Where is engagement growing or uneven? | Choose an enablement investment and review date. |
+| Engineering / developer experience lead | Which workflows need support? | Agree a training or workflow experiment. |
+| Fabric / BI operator | Can we trust and operate these signals? | Establish freshness, access, and recovery controls. |
+| Security / workforce-data steward | Who may see which slices? | Approve purpose, retention, and audience boundaries. |
 
-<img width="1951" height="1157" alt="Screenshot 2026-10-08 102429" src="https://github.com/user-attachments/assets/32d391f6-c6fa-451c-9f79-785efd480426" />
+Usage and acceptance are signals, **not proof of productivity, ROI, causality,
+or individual performance**. Combine them with developer feedback and delivery
+context; do not rank employees.
 
-<img width="2251" height="1236" alt="Screenshot 2026-10-08 102336" src="https://github.com/user-attachments/assets/1c826164-5c6b-4165-9df3-6ba846bf0946" />
+## Choose your path
 
-<img width="491" height="672" alt="Screenshot 2026-10-08 102353" src="https://github.com/user-attachments/assets/8195ec52-cca1-4ea1-9f23-317a955f74bd" />
+| Goal | Start here | What it demonstrates |
+| --- | --- | --- |
+| Tell the story without GitHub data | [Isolated synthetic demo](docs/bootstrap-guide.md#isolated-synthetic-demo-no-github-token) and [5/15-minute scripts](docs/powerbi-assets.md#demo-scripts) | Synthetic Gold to Power BI only; no Bronze/Silver ingestion proof. |
+| Evaluate your organization's data | [Live bootstrap](docs/bootstrap-guide.md) | Credentialed deployment and collection, subject to your own evidence and acceptance gates. |
+| Adapt or recover a deployment | [Manual deployment](docs/deployment-guide.md) | Technical configuration and recovery reference. |
+| Plan a customer engagement | [Discovery, workshop, and pilot](docs/deployment-guide.md#customer-engagement-discovery-to-pilot) | A decision-led evaluation with named owners and exit criteria. |
 
+### Preview the story locally
 
+The self-contained [five-page illustrative mockup](assets/demo/index.html) and
+[opening slide](assets/demo/opening.svg) offer an offline story preview. Serve
+from the repository root, then open `http://localhost:8000`:
+
+```bash
+python -m http.server 8000 --directory assets/demo
+```
+
+Mockup screenshots: [Executive](assets/demo/executive.png),
+[Teams](assets/demo/teams.png), [Experience](assets/demo/experience.png),
+[Repositories](assets/demo/repositories.png), [Quality](assets/demo/quality.png).
+All displayed values are **synthetic illustrative**, not observed customer
+data. These are local HTML mockup captures, **not actual Power BI renders,
+Fabric execution evidence, or a completed walkthrough video**.
+See the [capture manifest](assets/demo/manifest.json) for dates, provenance,
+and outstanding evidence.
+
+**Evidence status:** local tests **209 passed, 2 integration skipped**; local
+lint, build, and configuration/asset validation **passed** during preparation.
+These are local results, not CI or live-service evidence.
+Real Fabric rendering, credentialed end-to-end execution, and video capture
+remain outstanding.
+
+## Readiness: starter, not a production certification
+
+The repository includes versioned Bronze/Silver/Gold contracts, deployable
+notebooks and pipeline definitions, an idempotent deployment CLI, and starter
+Power BI assets. Source assets and local checks do not prove a live deployment.
+
+| Area | Current boundary / required next proof |
+| --- | --- |
+| Demo | Reproducible synthetic data is separate from live collection; capture actual rendered results before presenting them. |
+| Live end-to-end | No live credentials were available for this documentation work; no live run or actual Power BI screenshot/video is claimed. |
+| Report | Starter layouts require Desktop/service visual review; [capture checklist](docs/powerbi-assets.md#evidence-and-capture-checklist) is a requirement, not supplied evidence. |
+| Team totals | Standard Gold notebook has no primary-team mapping; executive additive team cards can be blank/zero. [Governed path](docs/architecture-operations.md#governed-primary-team-mapping-path). |
+| Access | RLS template is inactive; production requires tested filters and portal assignments. |
+| Credentials | Runtime reads a Key Vault token; automatic renewable GitHub App runtime is not implemented. [Rotation runbook](docs/architecture-operations.md#key-vault-token-rotation-runbook). |
+| Catalog | Current catalog URL returns GitHub 404; catalog schema is not verified. Do not claim validated catalog publication. |
+| Operations | No managed support/SLA is promised. Owners are unassigned until a customer accepts the [handoff](docs/architecture-operations.md#support-ownership-and-handoff). |
+
+Unverified remote screenshots have been removed. The local mockup and
+architecture diagram are illustrative/design references, not runtime evidence.
+
+**Next step:** run the synthetic walkthrough, then book a discovery/workshop
+with your sponsor, platform owner, and data steward. Agree a pilot decision
+before enabling live collection.
 
 ## Documentation
 
@@ -72,7 +136,7 @@ Authentication is deliberately outside the YAML contract. The default
 can inject another callable backed by managed identity or a secret store.
 Tokens and complete signed report URLs must never be logged or persisted.
 
-## One-command quickstart
+## Live one-command quickstart
 
 Prerequisites: Python 3.10+, Git, Azure CLI, a Fabric capacity, and permission
 to manage the selected Azure subscription and Fabric workspace. Run `az login`
@@ -298,8 +362,10 @@ remain deployment/runtime parameters. See
 [`docs/fabric-orchestration.md`](docs/fabric-orchestration.md) for lakehouse,
 environment, binding, scheduling, and Key Vault expectations.
 
-The CLI does not create a capacity, Key Vault, Fabric Environment, pipeline
-schedule, alert, RLS assignment, or primary-team mapping.
+The low-level `deploy` command does not create a capacity, Key Vault, pipeline
+schedule, alert, RLS assignment, or primary-team mapping. It can publish a Fabric
+Environment when configured; bootstrap additionally handles Key Vault and the
+managed schedule. Neither path supplies customer governance or operating owners.
 
 ## Development
 
